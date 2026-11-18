@@ -1,32 +1,71 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشاهدة المحاضرات</title>
-    <link rel="stylesheet" href="style.css">
+    <title>مشاهدة المحاضرات | منصة التفوق</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        @keyframes moveWatermark {
+            0% { top: 12%; right: 10%; }
+            50% { top: 75%; right: 55%; }
+            100% { top: 25%; right: 75%; }
+        }
+        .watermark-anim {
+            animation: moveWatermark 16s infinite alternate ease-in-out;
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
-        <h1 id="course-title">جاري التحميل...</h1>
-        <div class="nav-links">
-            <a href="courses.html" class="btn btn-outline">العودة للكورسات</a>
-            <button class="btn btn-danger" onclick="logout()">خروج</button>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- النافبار -->
+    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 id="course-title" class="text-lg md:text-xl font-black text-white truncate max-w-md">جاري التحميل...</h1>
+            <div class="flex items-center gap-3">
+                <a href="courses.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm px-4 py-2 rounded-xl transition-all border border-slate-700">
+                    ← العودة للكورسات
+                </a>
+                <button onclick="logout()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white font-bold text-sm px-4 py-2 rounded-xl transition-all border border-rose-500/30">
+                    خروج
+                </button>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="video-wrapper" id="player-box" style="display: none;">
-            <div class="watermark" id="watermark-text"></div>
-            <iframe id="yt-player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <!-- محتوى الصفحة (المشغل + قائمة الدروس) -->
+    <main class="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8 flex-grow">
+        
+        <!-- عمود الفيديو والمرفقات -->
+        <div class="lg:col-span-2 space-y-6">
+            <div id="player-box" class="hidden relative w-full pt-[56.25%] bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
+                <div id="watermark-text" class="watermark-anim absolute text-white/30 font-black text-sm md:text-base pointer-events-none z-20 select-none"></div>
+                <iframe id="yt-player" class="absolute inset-0 w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-blue-400">المحاضرة الحالية</span>
+                    <h2 id="current-lesson-title" class="text-xl font-black text-white mt-1">اختر محاضرة من القائمة للبدء</h2>
+                </div>
+                <div id="lesson-extras" class="flex flex-wrap gap-3"></div>
+            </div>
         </div>
 
-        <div id="lesson-extras" style="margin-bottom: 25px; display: flex; gap: 10px;"></div>
+        <!-- عمود قائمة المحاضرات -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-fit">
+            <h3 class="text-lg font-black text-white mb-4 flex items-center gap-2">
+                <span>📑</span> محتوى الكورس
+            </h3>
+            <div id="lessons-list" class="space-y-3">
+                <p class="text-slate-500 text-sm font-bold">جاري تحميل المحاضرات...</p>
+            </div>
+        </div>
 
-        <h3>محتوى الكورس (المحاضرات)</h3>
-        <div id="lessons-list">جاري تحميل المحاضرات...</div>
-    </div>
+    </main>
 
     <script src="config.js"></script>
     <script>
@@ -45,11 +84,12 @@
                 .single();
 
             if (!checkEnroll) {
-                alert("⛔ غير مصرح لك بدخول هذا الكورس! يرجى تفعيله بالكود أولاً.");
+                alert("⛔ غير مصرح لك بدخول هذا الكورس!");
                 return window.location.href = 'courses.html';
             }
 
-            document.getElementById('watermark-text').innerText = user.email;
+            const cleanPhone = user.email.replace('student_', '').replace('@platform.local', '').split('_')[0];
+            document.getElementById('watermark-text').innerText = cleanPhone;
 
             const { data: course } = await _supabase.from('courses').select('title').eq('id', courseId).single();
             if (course) document.getElementById('course-title').innerText = course.title;
@@ -64,14 +104,20 @@
             list.innerHTML = '';
 
             if (!lessons || lessons.length === 0) {
-                list.innerHTML = '<p>لم يتم رفع محاضرات في هذا الكورس بعد.</p>';
+                list.innerHTML = '<p class="text-slate-400 text-sm">لم يتم رفع محاضرات في هذا الكورس بعد.</p>';
                 return;
             }
 
             lessons.forEach((lesson, index) => {
                 const div = document.createElement('div');
-                div.className = 'lesson-item';
-                div.innerHTML = `<span><strong>المحاضرة ${index + 1}:</strong> ${lesson.title}</span> <span>▶️ تشغيل</span>`;
+                div.className = 'lesson-item p-4 rounded-2xl border border-slate-800 bg-slate-950/50 hover:border-blue-500/50 cursor-pointer transition-all flex items-center justify-between gap-3';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-slate-800 text-blue-400 font-black text-xs flex items-center justify-center shrink-0">${index + 1}</span>
+                        <span class="font-bold text-sm text-slate-200">${lesson.title}</span>
+                    </div>
+                    <span class="text-xs font-bold text-blue-500 shrink-0">تشغيل ▶️</span>
+                `;
                 div.onclick = () => playLesson(lesson, div);
                 list.appendChild(div);
 
@@ -80,19 +126,24 @@
         }
 
         function playLesson(lesson, element) {
-            document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
+            document.querySelectorAll('.lesson-item').forEach(el => {
+                el.classList.remove('border-blue-500', 'bg-blue-950/30');
+                el.classList.add('border-slate-800', 'bg-slate-950/50');
+            });
+            element.classList.remove('border-slate-800', 'bg-slate-950/50');
+            element.classList.add('border-blue-500', 'bg-blue-950/30');
 
-            document.getElementById('player-box').style.display = 'block';
+            document.getElementById('player-box').classList.remove('hidden');
+            document.getElementById('current-lesson-title').innerText = lesson.title;
             document.getElementById('yt-player').src = `https://www.youtube-nocookie.com/embed/${lesson.youtube_id}?rel=0&modestbranding=1`;
 
             const extras = document.getElementById('lesson-extras');
             extras.innerHTML = '';
             if (lesson.pdf_url) {
-                extras.innerHTML += `<a href="${lesson.pdf_url}" target="_blank" class="btn btn-primary">📄 تحميل مذكرة المحاضرة (PDF)</a>`;
+                extras.innerHTML += `<a href="${lesson.pdf_url}" target="_blank" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all">📄 تحميل المذكرة (PDF)</a>`;
             }
             if (lesson.exam_url) {
-                extras.innerHTML += `<a href="${lesson.exam_url}" target="_blank" class="btn btn-success">📝 دخول امتحان المحاضرة</a>`;
+                extras.innerHTML += `<a href="${lesson.exam_url}" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all">📝 دخول الامتحان</a>`;
             }
         }
 
