@@ -1,102 +1,61 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | المنصة التعليمية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>تسجيل الدخول | منصة التفوق التعليمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.5);
-            --accent: #8b5cf6;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.16);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body {
-            min-height: 100vh;
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 60%, #020617);
-            color: var(--text-main); direction: rtl; display: flex;
-            justify-content: center; align-items: center; overflow: hidden; position: relative; padding: 20px;
-        }
-        .orb { position: absolute; border-radius: 50%; filter: blur(75px); z-index: 0; animation: floatOrb 12s infinite alternate ease-in-out; }
-        .orb-1 { width: 320px; height: 320px; background: rgba(59, 130, 246, 0.35); top: -80px; right: -60px; }
-        .orb-2 { width: 280px; height: 280px; background: rgba(139, 92, 246, 0.3); bottom: -70px; left: -50px; }
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(-20px, 25px) scale(0.95); }
-        }
-        .auth-box {
-            position: relative; z-index: 1; width: 100%; max-width: 430px;
-            background: var(--glass-bg); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .logo-badge {
-            width: 64px; height: 64px; margin: 0 auto 16px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 2rem;
-            box-shadow: 0 10px 25px var(--primary-glow);
-        }
-        h2 { text-align: center; font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #fff; }
-        .subtitle { text-align: center; color: var(--text-muted); font-size: 0.92rem; margin-bottom: 26px; }
-        .tabs-container {
-            position: relative; display: flex; background: rgba(15, 23, 42, 0.6);
-            border-radius: 14px; padding: 5px; margin-bottom: 26px; border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .tab-slider {
-            position: absolute; top: 5px; right: 5px; width: calc(50% - 5px); height: calc(100% - 10px);
-            background: linear-gradient(135deg, var(--primary), #2563eb); border-radius: 10px;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .tab-btn { position: relative; z-index: 1; flex: 1; padding: 10px; text-align: center; font-weight: 700; color: var(--text-muted); cursor: pointer; }
-        .tab-btn.active { color: #ffffff; }
-        .input-group { position: relative; margin-bottom: 18px; }
-        .input-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.7; }
-        input {
-            width: 100%; padding: 14px 44px 14px 16px; background: rgba(15, 23, 42, 0.55);
-            border: 1.5px solid rgba(255, 255, 255, 0.12); border-radius: 14px; color: #ffffff; font-size: 1rem; outline: none;
-        }
-        input:focus { border-color: var(--primary); background: rgba(15, 23, 42, 0.85); }
-        .btn-submit {
-            width: 100%; padding: 14px; margin-top: 6px; border: none; border-radius: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--accent)); color: white;
-            font-size: 1.05rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px -5px var(--primary-glow);
-        }
-        #msg { text-align: center; font-size: 0.92rem; font-weight: 600; margin-top: 16px; min-height: 22px; }
-        .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; vertical-align: middle; margin-left: 8px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
-<body>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="auth-box">
-        <div class="logo-badge">🎓</div>
-        <h2>أهلاً بك في منصتك</h2>
-        <p class="subtitle">ادخل برقم موبايلك وابدأ رحلة التفوق</p>
+<body class="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 relative overflow-hidden">
 
-        <div class="tabs-container">
-            <div class="tab-slider" id="tab-slider"></div>
-            <div class="tab-btn active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</div>
-            <div class="tab-btn" id="tab-signup" onclick="switchTab('signup')">حساب جديد</div>
+    <!-- إضاءات خلفية عصرية -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 w-full max-w-md bg-slate-900/70 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
+        <!-- اللوجو -->
+        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30">
+            🎓
+        </div>
+        <h2 class="text-2xl font-black text-center text-white mb-1">أهلاً بك في منصتك</h2>
+        <p class="text-slate-400 text-sm text-center mb-7">سجل برقم موبايلك وابدأ رحلة التفوق</p>
+
+        <!-- أزرار التبديل (دخول / حساب جديد) -->
+        <div class="grid grid-cols-2 bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/80 mb-6">
+            <button id="tab-login" onclick="switchTab('login')" class="py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all">
+                تسجيل الدخول
+            </button>
+            <button id="tab-signup" onclick="switchTab('signup')" class="py-2.5 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all">
+                حساب جديد
+            </button>
         </div>
 
-        <div class="input-group">
-            <span class="input-icon">📱</span>
-            <input type="tel" id="phone" placeholder="رقم الموبايل (مثال: 01012345678)" dir="ltr" style="text-align: right;">
-        </div>
-        <div class="input-group">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="password" placeholder="كلمة المرور">
+        <!-- حقول الإدخال -->
+        <div class="space-y-4">
+            <div class="relative">
+                <span class="absolute right-4 top-3.5 text-lg opacity-70">📱</span>
+                <input type="tel" id="phone" placeholder="رقم الموبايل (مثال: 01012345678)" dir="ltr" 
+                    class="w-full bg-slate-950/60 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-right text-white placeholder-slate-500 outline-none transition-all">
+            </div>
+
+            <div class="relative">
+                <span class="absolute right-4 top-3.5 text-lg opacity-70">🔒</span>
+                <input type="password" id="password" placeholder="كلمة المرور" 
+                    class="w-full bg-slate-950/60 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-white placeholder-slate-500 outline-none transition-all">
+            </div>
+
+            <button id="submit-btn" onclick="handleAuth()" 
+                class="w-full py-3.5 mt-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-base shadow-lg shadow-blue-600/30 transition-all transform active:scale-95">
+                دخول للمنصة 🚀
+            </button>
         </div>
 
-        <button class="btn-submit" id="submit-btn" onclick="handleAuth()">دخول للمنصة 🚀</button>
-        <p id="msg"></p>
+        <p id="msg" class="text-center text-sm font-bold mt-4 min-h-[20px]"></p>
     </div>
 
     <script src="config.js"></script>
@@ -109,17 +68,18 @@
 
         function switchTab(newMode) {
             mode = newMode;
-            const slider = document.getElementById('tab-slider');
+            const loginBtn = document.getElementById('tab-login');
+            const signupBtn = document.getElementById('tab-signup');
+            const submitBtn = document.getElementById('submit-btn');
+
             if (mode === 'login') {
-                slider.style.transform = 'translateX(0%)';
-                document.getElementById('tab-login').classList.add('active');
-                document.getElementById('tab-signup').classList.remove('active');
-                document.getElementById('submit-btn').innerHTML = 'دخول للمنصة 🚀';
+                loginBtn.className = "py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all";
+                signupBtn.className = "py-2.5 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all";
+                submitBtn.innerHTML = 'دخول للمنصة 🚀';
             } else {
-                slider.style.transform = 'translateX(-100%)';
-                document.getElementById('tab-signup').classList.add('active');
-                document.getElementById('tab-login').classList.remove('active');
-                document.getElementById('submit-btn').innerHTML = 'إنشاء حساب جديد ✨';
+                signupBtn.className = "py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all";
+                loginBtn.className = "py-2.5 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all";
+                submitBtn.innerHTML = 'إنشاء حساب جديد ✨';
             }
             document.getElementById('msg').innerText = '';
         }
@@ -131,13 +91,13 @@
             const btn = document.getElementById('submit-btn');
 
             if (!phone || !password) {
-                msg.style.color = "#f87171";
+                msg.className = "text-center text-sm font-bold mt-4 text-rose-400";
                 return msg.innerText = "من فضلك اكتب رقم الموبايل وكلمة المرور";
             }
 
             const fakeEmail = `student_${phone.replace(/\s+/g, '')}@platform.local`;
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> جاري التحقق...';
+            btn.innerHTML = 'جاري التحقق... ⏳';
             msg.innerText = "";
 
             if (mode === 'login') {
@@ -146,7 +106,7 @@
                 btn.innerHTML = 'دخول للمنصة 🚀';
 
                 if (error) {
-                    msg.style.color = "#f87171";
+                    msg.className = "text-center text-sm font-bold mt-4 text-rose-400";
                     msg.innerText = "❌ رقم الموبايل أو كلمة المرور غير صحيحة!";
                 } else {
                     window.location.href = 'courses.html';
@@ -154,7 +114,6 @@
             } else {
                 let { error } = await _supabase.auth.signUp({ email: fakeEmail, password });
                 
-                // تجاوز ذكي لو ظهر Rate Limit
                 if (error && (error.message.includes('rate limit') || error.message.includes('Over Request Limit'))) {
                     const uniqueEmail = `student_${phone.replace(/\s+/g, '')}_${Math.floor(Math.random() * 1000)}@platform.local`;
                     const retry = await _supabase.auth.signUp({ email: uniqueEmail, password });
@@ -165,10 +124,10 @@
                 btn.innerHTML = 'إنشاء حساب جديد ✨';
 
                 if (error) {
-                    msg.style.color = "#f87171";
+                    msg.className = "text-center text-sm font-bold mt-4 text-rose-400";
                     msg.innerText = error.message.includes('already registered') ? "⚠️ الرقم ده مسجل قبل كده، ادخل من تسجيل الدخول!" : "خطأ: " + error.message;
                 } else {
-                    msg.style.color = "#34d399";
+                    msg.className = "text-center text-sm font-bold mt-4 text-emerald-400";
                     msg.innerText = "🎉 تم إنشاء حسابك بنجاح! جاري تحويلك...";
                     setTimeout(() => window.location.href = 'courses.html', 900);
                 }
