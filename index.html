@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | منصة التفوق التعليمية</title>
+    <title>منصة التفوق التعليمية | مرحباً بك</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,52 +11,96 @@
         body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 relative overflow-hidden">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
 
-    <!-- إضاءات خلفية عصرية -->
-    <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="relative z-10 w-full max-w-md bg-slate-900/70 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
-        <!-- اللوجو -->
-        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30">
-            🎓
-        </div>
-        <h2 class="text-2xl font-black text-center text-white mb-1">أهلاً بك في منصتك</h2>
-        <p class="text-slate-400 text-sm text-center mb-7">سجل برقم موبايلك وابدأ رحلة التفوق</p>
-
-        <!-- أزرار التبديل (دخول / حساب جديد) -->
-        <div class="grid grid-cols-2 bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/80 mb-6">
-            <button id="tab-login" onclick="switchTab('login')" class="py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all">
-                تسجيل الدخول
-            </button>
-            <button id="tab-signup" onclick="switchTab('signup')" class="py-2.5 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all">
-                حساب جديد
-            </button>
-        </div>
-
-        <!-- حقول الإدخال -->
-        <div class="space-y-4">
-            <div class="relative">
-                <span class="absolute right-4 top-3.5 text-lg opacity-70">📱</span>
-                <input type="tel" id="phone" placeholder="رقم الموبايل (مثال: 01012345678)" dir="ltr" 
-                    class="w-full bg-slate-950/60 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-right text-white placeholder-slate-500 outline-none transition-all">
+    <!-- شريط التنقل العلوي (Navbar) -->
+    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-500 text-white rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-600/30">
+                    🎓
+                </div>
+                <span class="text-xl font-black text-white tracking-tight">منصة <span class="text-blue-500">التفوق</span></span>
             </div>
 
-            <div class="relative">
-                <span class="absolute right-4 top-3.5 text-lg opacity-70">🔒</span>
-                <input type="password" id="password" placeholder="كلمة المرور" 
-                    class="w-full bg-slate-950/60 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-white placeholder-slate-500 outline-none transition-all">
+            <div class="flex items-center gap-3">
+                <a href="#auth-section" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/25 transition-all">
+                    دخول الطلاب 🚀
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- قسم الـ Hero (البانر الرئيسي الجذاب) -->
+    <header class="relative overflow-hidden py-20 px-6 flex-grow flex items-center">
+        <!-- إضاءات خلفية جمالية -->
+        <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-10 left-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+            <div class="text-center lg:text-right space-y-6">
+                <span class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-extrabold px-4 py-2 rounded-full">
+                    ✨ بوابتك الأولى نحو التفوق الدراسي والدرجات النهائية
+                </span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-white tracking-tight">
+                    تعلم ببساطة، <br>وحقق <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">أحلامك التعليمية</span>
+                </h1>
+                <p class="text-slate-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                    منصة تعليمية متكاملة تقدم لك شرحاً مبسطاً، مذكرات تفصيلية، ومتابعة دقيقة لمستواك الدراسي من أفضل أساتذة المنهج.
+                </p>
+                <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
+                    <a href="#auth-section" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-8 py-3.5 rounded-2xl shadow-xl shadow-blue-600/30 transition-all transform active:scale-95">
+                        ابدأ المذاكرة الآن 🎯
+                    </a>
+                </div>
             </div>
 
-            <button id="submit-btn" onclick="handleAuth()" 
-                class="w-full py-3.5 mt-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-base shadow-lg shadow-blue-600/30 transition-all transform active:scale-95">
-                دخول للمنصة 🚀
-            </button>
-        </div>
+            <!-- بطاقة تسجيل الدخول السريعة في الواجهة -->
+            <div id="auth-section" class="w-full max-w-md mx-auto bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
+                <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-2xl shadow-md">
+                    🔒
+                </div>
+                <h3 class="text-2xl font-black text-center text-white mb-1">تسجيل الدخول للحساب</h3>
+                <p class="text-slate-400 text-xs text-center mb-6">أدخل رقم موبايلك وكلمة المرور للوصول لكورساتك</p>
 
-        <p id="msg" class="text-center text-sm font-bold mt-4 min-h-[20px]"></p>
-    </div>
+                <!-- أزرار التبويب (دخول / حساب جديد) -->
+                <div class="grid grid-cols-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 mb-6">
+                    <button id="tab-login" onclick="switchTab('login')" class="py-2.5 rounded-xl font-bold text-xs bg-blue-600 text-white shadow transition-all">
+                        تسجيل الدخول
+                    </button>
+                    <button id="tab-signup" onclick="switchTab('signup')" class="py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition-all">
+                        حساب جديد
+                    </button>
+                </div>
+
+                <!-- الحقول -->
+                <div class="space-y-4">
+                    <div class="relative">
+                        <span class="absolute right-4 top-3.5 text-base opacity-70">📱</span>
+                        <input type="tel" id="phone" placeholder="رقم الموبايل (01012345678)" dir="ltr" 
+                            class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-right text-white placeholder-slate-600 outline-none text-sm transition-all">
+                    </div>
+                    <div class="relative">
+                        <span class="absolute right-4 top-3.5 text-base opacity-70">🔒</span>
+                        <input type="password" id="password" placeholder="كلمة المرور" 
+                            class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-white placeholder-slate-600 outline-none text-sm transition-all">
+                    </div>
+
+                    <button id="submit-btn" onclick="handleAuth()" 
+                        class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 transition-all">
+                        دخول للمنصة 🚀
+                    </button>
+                </div>
+
+                <p id="msg" class="text-center text-xs font-bold mt-4 min-h-[20px]"></p>
+            </div>
+        </div>
+    </header>
+
+    <!-- الفوتر -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-slate-500 text-xs font-semibold">
+        جميع الحقوق محفوظة © 2026 منصة التفوق التعليمية
+    </footer>
 
     <script src="config.js"></script>
     <script>
@@ -73,12 +117,12 @@
             const submitBtn = document.getElementById('submit-btn');
 
             if (mode === 'login') {
-                loginBtn.className = "py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all";
-                signupBtn.className = "py-2.5 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all";
+                loginBtn.className = "py-2.5 rounded-xl font-bold text-xs bg-blue-600 text-white shadow transition-all";
+                signupBtn.className = "py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition-all";
                 submitBtn.innerHTML = 'دخول للمنصة 🚀';
             } else {
-                signupBtn.className = "py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-md transition-all";
-                loginBtn.className = "py-2.5 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all";
+                signupBtn.className = "py-2.5 rounded-xl font-bold text-xs bg-blue-600 text-white shadow transition-all";
+                loginBtn.className = "py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition-all";
                 submitBtn.innerHTML = 'إنشاء حساب جديد ✨';
             }
             document.getElementById('msg').innerText = '';
@@ -91,7 +135,7 @@
             const btn = document.getElementById('submit-btn');
 
             if (!phone || !password) {
-                msg.className = "text-center text-sm font-bold mt-4 text-rose-400";
+                msg.className = "text-center text-xs font-bold mt-4 text-rose-400";
                 return msg.innerText = "من فضلك اكتب رقم الموبايل وكلمة المرور";
             }
 
@@ -106,7 +150,7 @@
                 btn.innerHTML = 'دخول للمنصة 🚀';
 
                 if (error) {
-                    msg.className = "text-center text-sm font-bold mt-4 text-rose-400";
+                    msg.className = "text-center text-xs font-bold mt-4 text-rose-400";
                     msg.innerText = "❌ رقم الموبايل أو كلمة المرور غير صحيحة!";
                 } else {
                     window.location.href = 'courses.html';
@@ -124,10 +168,10 @@
                 btn.innerHTML = 'إنشاء حساب جديد ✨';
 
                 if (error) {
-                    msg.className = "text-center text-sm font-bold mt-4 text-rose-400";
-                    msg.innerText = error.message.includes('already registered') ? "⚠️ الرقم ده مسجل قبل كده، ادخل من تسجيل الدخول!" : "خطأ: " + error.message;
+                    msg.className = "text-center text-xs font-bold mt-4 text-rose-400";
+                    msg.innerText = error.message.includes('already registered') ? "⚠️ الرقم مسجل من قبل، سجل دخول مباشرة!" : "خطأ: " + error.message;
                 } else {
-                    msg.className = "text-center text-sm font-bold mt-4 text-emerald-400";
+                    msg.className = "text-center text-xs font-bold mt-4 text-emerald-400";
                     msg.innerText = "🎉 تم إنشاء حسابك بنجاح! جاري تحويلك...";
                     setTimeout(() => window.location.href = 'courses.html', 900);
                 }
