@@ -3,84 +3,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول بالرقم | المنصة التعليمية</title>
-    <link rel="stylesheet" href="style.css">
+    <title>تسجيل الدخول | المنصة التعليمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --accent: #8b5cf6;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.16);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 60%, #020617);
+            color: var(--text-main);
+            direction: rtl;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* كرات الإضاءة المتحركة في الخلفية */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(75px);
+            z-index: 0;
+            animation: floatOrb 12s infinite alternate ease-in-out;
+        }
+
+        .orb-1 {
+            width: 320px;
+            height: 320px;
+            background: rgba(59, 130, 246, 0.35);
+            top: -80px;
+            right: -60px;
+        }
+
+        .orb-2 {
+            width: 280px;
+            height: 280px;
+            background: rgba(139, 92, 246, 0.3);
+            bottom: -70px;
+            left: -50px;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 180px;
+            height: 180px;
+            background: rgba(16, 185, 129, 0.2);
+            top: 50%;
+            left: 20%;
+            animation-duration: 16s;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -40px) scale(1.1); }
+            100% { transform: translate(-20px, 25px) scale(0.95); }
+        }
+
+        /* الكارت الزجاجي الرئيسي */
+        .auth-box {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 430px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardEntrance {
+            0% {
+                opacity: 0;
+                transform: translateY(35px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* أيقونة الترحيب المتحركة */
+        .logo-badge {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 10px 25px var(--primary-glow);
+            animation: pulseFloat 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .auth-box h2 {
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            background: linear-gradient(to left, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 26px;
+        }
+
+        /* شريط التبديل المتحرك (Sliding Tabs) */
+        .tabs-container {
+            position: relative;
+            display: flex;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 14px;
+            padding: 5px;
+            margin-bottom: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-slider {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: calc(50% - 5px);
+            height: calc(100% - 10px);
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            border-radius: 10px;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .tab-btn {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            user-select: none;
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+        }
+
+        /* حقول الإدخال */
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+            transition: transform 0.25s ease;
+        }
+
+        .input-group:focus-within {
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            opacity: 0.7;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .input-group:focus-within .input-icon {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 44px 14px 16px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: #64748b;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 0.85);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+        }
+
+        /* زر الدخول العصري */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px var(--primary-glow);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* لمعة تمر على الزر */
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+            transform: skewX(-25deg);
+            transition: 0.6s;
+        }
+
+        .btn-submit:hover::after {
+            left: 140%;
+        }
+
+        /* حركة اهتزاز عند الخطأ */
+        .shake {
+            animation: shakeBox 0.45s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shakeBox {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        #msg {
+            text-align: center;
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-top: 16px;
+            min-height: 22px;
+            transition: all 0.3s ease;
+        }
+
+        /* دوران التحميل */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <div class="auth-wrapper">
-        <div class="auth-box">
-            <h2 style="color: var(--primary); margin-top: 0;">أهلاً بك يا بطل 🎓</h2>
-            <p style="color: var(--muted); font-size: 0.9rem;">سجل دخولك برقم الموبايل وكلمة المرور</p>
-            
-            <div class="tabs">
-                <div class="tab active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</div>
-                <div class="tab" id="tab-signup" onclick="switchTab('signup')">حساب جديد</div>
+
+    <!-- خلفية الكرات الضوئية المتحركة -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="auth-box" id="auth-card">
+        <div class="logo-badge">🎓</div>
+        <h2>أهلاً بك في منصتك</h2>
+        <p class="subtitle">ادخل برقم موبايلك وابدأ رحلة التفوق</p>
+
+        <div class="tabs-container">
+            <div class="tab-slider" id="tab-slider"></div>
+            <div class="tab-btn active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</div>
+            <div class="tab-btn" id="tab-signup" onclick="switchTab('signup')">حساب جديد</div>
+        </div>
+
+        <div id="form-area">
+            <div class="input-group">
+                <span class="input-icon">📱</span>
+                <input type="tel" id="phone" placeholder="رقم الموبايل (مثال: 01012345678)" dir="ltr" style="text-align: right;">
             </div>
 
-            <div id="form-area">
-                <input type="tel" id="phone" placeholder="رقم الموبايل (مثال: 01012345678)" dir="ltr" style="text-align: right;">
-                <input type="password" id="password" placeholder="كلمة المرور (أرقام أو حروف)">
-                <button class="btn btn-primary" style="width: 100%;" id="submit-btn" onclick="handleAuth()">دخول للمنصة</button>
+            <div class="input-group">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" placeholder="كلمة المرور">
             </div>
-            <p id="msg" style="color: #ef4444; font-size: 0.9rem; margin-top: 15px;"></p>
+
+            <button class="btn-submit" id="submit-btn" onclick="handleAuth()">دخول للمنصة 🚀</button>
         </div>
+
+        <p id="msg"></p>
     </div>
 
     <script src="config.js"></script>
     <script>
         let mode = 'login';
 
-        // لو الطالب مسجل دخول قبل كده، نحوله مباشرة للكورسات
         _supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) window.location.href = 'courses.html';
         });
 
         function switchTab(newMode) {
             mode = newMode;
-            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
-            document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
-            document.getElementById('submit-btn').innerText = mode === 'login' ? 'دخول للمنصة' : 'إنشاء حساب جديد';
+            const slider = document.getElementById('tab-slider');
+            const loginTab = document.getElementById('tab-login');
+            const signupTab = document.getElementById('tab-signup');
+            const btn = document.getElementById('submit-btn');
+
+            if (mode === 'login') {
+                slider.style.transform = 'translateX(0%)';
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                btn.innerHTML = 'دخول للمنصة 🚀';
+            } else {
+                // في اتجاه RTL التحرك لليسار يكون بالسالب
+                slider.style.transform = 'translateX(-100%)';
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                btn.innerHTML = 'إنشاء حساب جديد ✨';
+            }
             document.getElementById('msg').innerText = '';
+        }
+
+        function triggerShake() {
+            const card = document.getElementById('auth-card');
+            card.classList.remove('shake');
+            void card.offsetWidth; // لإعادة تشغيل الأنيميشن
+            card.classList.add('shake');
         }
 
         async function handleAuth() {
             const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value.trim();
             const msg = document.getElementById('msg');
+            const btn = document.getElementById('submit-btn');
 
-            if (!phone || !password) return msg.innerText = "من فضلك اكتب رقم الموبايل وكلمة المرور";
-            
-            // تحويل رقم الموبايل لوهمي رسمي يفهمه Supabase خلف الكواليس
+            if (!phone || !password) {
+                msg.style.color = "#f87171";
+                msg.innerText = "من فضلك اكتب رقم الموبايل وكلمة المرور";
+                triggerShake();
+                return;
+            }
+
             const fakeEmail = `student_${phone}@platform.local`;
-
-            msg.style.color = "#2563eb";
-            msg.innerText = "جاري التحميل...";
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> جاري التحقق...';
+            msg.innerText = "";
 
             if (mode === 'login') {
                 const { error } = await _supabase.auth.signInWithPassword({ email: fakeEmail, password });
+                btn.disabled = false;
+                btn.innerHTML = 'دخول للمنصة 🚀';
+
                 if (error) {
-                    msg.style.color = "#ef4444";
-                    msg.innerText = "رقم الموبايل أو كلمة المرور غير صحيحة!";
+                    msg.style.color = "#f87171";
+                    msg.innerText = "❌ رقم الموبايل أو كلمة المرور غير صحيحة!";
+                    triggerShake();
                 } else {
-                    window.location.href = 'courses.html';
+                    msg.style.color = "#34d399";
+                    msg.innerText = "✅ تم الدخول بنجاح! جاري فتح الكورسات...";
+                    setTimeout(() => window.location.href = 'courses.html', 800);
                 }
             } else {
                 const { error } = await _supabase.auth.signUp({ email: fakeEmail, password });
+                btn.disabled = false;
+                btn.innerHTML = 'إنشاء حساب جديد ✨';
+
                 if (error) {
-                    msg.style.color = "#ef4444";
+                    msg.style.color = "#f87171";
+                    triggerShake();
                     if (error.message.includes('already registered')) {
-                        msg.innerText = "رقم الموبايل مسجل من قبل، جرب تسجيل الدخول!";
+                        msg.innerText = "⚠️ الرقم ده مسجل قبل كده، ادخل من تبويب تسجيل الدخول!";
                     } else {
                         msg.innerText = "حدث خطأ: " + error.message;
                     }
                 } else {
-                    style.color = "#10b981";
-                    msg.innerText = "تم إنشاء الحساب بنجاح! جاري تحويلك...";
-                    setTimeout(() => window.location.href = 'courses.html', 1000);
+                    msg.style.color = "#34d399";
+                    msg.innerText = "🎉 تم إنشاء حسابك بنجاح! جاري تحويلك...";
+                    setTimeout(() => window.location.href = 'courses.html', 900);
                 }
             }
         }
+
+        // السماح بالضغط على Enter من الكيبورد للدخول
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') handleAuth();
+        });
     </script>
 </body>
 </html>
