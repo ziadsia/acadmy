@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشاهدة المحاضرات</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <h1 id="course-title">جاري التحميل...</h1>
+        <div class="nav-links">
+            <a href="courses.html" class="btn btn-outline">العودة للكورسات</a>
+            <button class="btn btn-danger" onclick="logout()">خروج</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="video-wrapper" id="player-box" style="display: none;">
+            <div class="watermark" id="watermark-text"></div>
+            <iframe id="yt-player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <div id="lesson-extras" style="margin-bottom: 25px; display: flex; gap: 10px;"></div>
+
+        <h3>محتوى الكورس (المحاضرات)</h3>
+        <div id="lessons-list">جاري تحميل المحاضرات...</div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('course_id');
+
+        async function initWatch() {
+            const user = await checkAuth();
+            if (!user || !courseId) return window.location.href = 'courses.html';
+
+            const { data: checkEnroll } = await _supabase
+                .from('student_courses')
+                .select('*')
+                .eq('student_email', user.email)
+                .eq('course_id', courseId)
+                .single();
+
+            if (!checkEnroll) {
+                alert("⛔ غير مصرح لك بدخول هذا الكورس! يرجى تفعيله بالكود أولاً.");
+                return window.location.href = 'courses.html';
+            }
+
+            document.getElementById('watermark-text').innerText = user.email;
+
+            const { data: course } = await _supabase.from('courses').select('title').eq('id', courseId).single();
+            if (course) document.getElementById('course-title').innerText = course.title;
+
+            const { data: lessons } = await _supabase
+                .from('lessons')
+                .select('*')
+                .eq('course_id', courseId)
+                .order('order_num');
+
+            const list = document.getElementById('lessons-list');
+            list.innerHTML = '';
+
+            if (!lessons || lessons.length === 0) {
+                list.innerHTML = '<p>لم يتم رفع محاضرات في هذا الكورس بعد.</p>';
+                return;
+            }
+
+            lessons.forEach((lesson, index) => {
+                const div = document.createElement('div');
+                div.className = 'lesson-item';
+                div.innerHTML = `<span><strong>المحاضرة ${index + 1}:</strong> ${lesson.title}</span> <span>▶️ تشغيل</span>`;
+                div.onclick = () => playLesson(lesson, div);
+                list.appendChild(div);
+
+                if (index === 0) playLesson(lesson, div);
+            });
+        }
+
+        function playLesson(lesson, element) {
+            document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            document.getElementById('player-box').style.display = 'block';
+            document.getElementById('yt-player').src = `https://www.youtube-nocookie.com/embed/${lesson.youtube_id}?rel=0&modestbranding=1`;
+
+            const extras = document.getElementById('lesson-extras');
+            extras.innerHTML = '';
+            if (lesson.pdf_url) {
+                extras.innerHTML += `<a href="${lesson.pdf_url}" target="_blank" class="btn btn-primary">📄 تحميل مذكرة المحاضرة (PDF)</a>`;
+            }
+            if (lesson.exam_url) {
+                extras.innerHTML += `<a href="${lesson.exam_url}" target="_blank" class="btn btn-success">📝 دخول امتحان المحاضرة</a>`;
+            }
+        }
+
+        initWatch();
+    </script>
+</body>
+</html>

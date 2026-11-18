@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | المنصة التعليمية</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2 style="color: var(--primary); margin-top: 0;">أهلاً بك في منصتنا التعليمية 🎓</h2>
+            <div class="tabs">
+                <div class="tab active" id="tab-login" onclick="switchTab('login')">تسجيل الدخول</div>
+                <div class="tab" id="tab-signup" onclick="switchTab('signup')">حساب جديد</div>
+            </div>
+
+            <div id="form-area">
+                <input type="email" id="email" placeholder="البريد الإلكتروني (مثال: student@gmail.com)">
+                <input type="password" id="password" placeholder="كلمة المرور (6 أحرف على الأقل)">
+                <button class="btn btn-primary" style="width: 100%;" id="submit-btn" onclick="handleAuth()">دخول للمنصة</button>
+            </div>
+            <p id="msg" style="color: #ef4444; font-size: 0.9rem; margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        let mode = 'login';
+
+        _supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) window.location.href = 'courses.html';
+        });
+
+        function switchTab(newMode) {
+            mode = newMode;
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+            document.getElementById('submit-btn').innerText = mode === 'login' ? 'دخول للمنصة' : 'إنشاء حساب جديد';
+            document.getElementById('msg').innerText = '';
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const msg = document.getElementById('msg');
+
+            if (!email || !password) return msg.innerText = "من فضلك املأ جميع البيانات";
+            msg.style.color = "#2563eb";
+            msg.innerText = "جاري التحميل...";
+
+            if (mode === 'login') {
+                const { error } = await _supabase.auth.signInWithPassword({ email, password });
+                if (error) {
+                    msg.style.color = "#ef4444";
+                    msg.innerText = "خطأ في الإيميل أو كلمة المرور!";
+                } else {
+                    window.location.href = 'courses.html';
+                }
+            } else {
+                const { error } = await _supabase.auth.signUp({ email, password });
+                if (error) {
+                    msg.style.color = "#ef4444";
+                    msg.innerText = "حدث خطأ: " + error.message;
+                } else {
+                    msg.style.color = "#10b981";
+                    msg.innerText = "تم إنشاء الحساب بنجاح! جاري تحويلك...";
+                    setTimeout(() => window.location.href = 'courses.html', 1000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
