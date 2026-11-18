@@ -3,22 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الكورسات الدراسية</title>
+    <title>الكورسات الدراسية | المنصة التعليمية</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <nav class="navbar">
-        <h1>منصتي التعليمية 📚</h1>
+        <h1>🎓 منصة التفوق التعليمية</h1>
         <div class="nav-links">
-            <span id="user-email" style="font-size: 0.9rem; color: var(--muted);"></span>
-            <button class="btn btn-danger" onclick="logout()">خروج</button>
+            <span id="user-phone" style="font-size: 0.9rem; font-weight: 700; color: var(--text-muted); background: #f1f5f9; padding: 8px 14px; border-radius: 10px;"></span>
+            <button class="btn btn-danger" onclick="logout()">تسجيل خروج</button>
         </div>
     </nav>
 
+    <!-- بانر ترحيبي يشبه منصات الكبار -->
+    <div class="hero-banner">
+        <h2>أهلاً بك يا بطل في بوابتك التعليمية 🚀</h2>
+        <p>تابع دروسك، تصفح الكورسات المفعلة لديك، وابدأ رحلة التفوق والنجاح بكل سهولة.</p>
+    </div>
+
     <div class="container">
-        <h2>الكورسات المتاحة</h2>
-        <div class="grid" id="courses-grid">جاري تحميل الكورسات...</div>
+        <h3 class="section-title">📚 الكورسات المتاحة للدراسة</h3>
+        <div class="grid" id="courses-grid">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">جاري تحميل الكورسات...</div>
+        </div>
     </div>
 
     <script src="config.js"></script>
@@ -28,7 +36,9 @@
         async function init() {
             currentUser = await checkAuth();
             if (!currentUser) return;
-            document.getElementById('user-email').innerText = currentUser.email;
+            
+            const cleanPhone = currentUser.email.replace('student_', '').replace('@platform.local', '').split('_')[0];
+            document.getElementById('user-phone').innerText = "📱 " + cleanPhone;
             loadCourses();
         }
 
@@ -44,7 +54,7 @@
             grid.innerHTML = '';
 
             if (!courses || courses.length === 0) {
-                grid.innerHTML = '<p>لا توجد كورسات مضافة حالياً.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:var(--text-muted);">لا توجد كورسات مضافة حالياً.</p>';
                 return;
             }
 
@@ -57,19 +67,24 @@
                         </div>
                         <div class="card-body">
                             <span class="badge ${isUnlocked ? 'badge-open' : 'badge-locked'}">
-                                ${isUnlocked ? '✅ مفعل لك' : '🔒 مغلق بكود'}
+                                ${isUnlocked ? '✅ الكورس مفعل ومتاح' : '🔒 كورس مغلق'}
                             </span>
-                            <p style="color: var(--muted); margin: 15px 0;">${course.description || ''}</p>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; margin: 12px 0 20px; line-height: 1.5;">${course.description || 'لا يوجد وصف مضاف لهذا الكورس حالياً.'}</p>
                             
                             ${isUnlocked ? `
-                                <a href="watch.html?course_id=${course.id}" class="btn btn-success" style="width: 100%; text-align: center;">
-                                    دخول ومشاهدة المحاضرات 🎬
+                                <a href="watch.html?course_id=${course.id}" class="btn btn-success" style="width: 100%;">
+                                    دخول للمشاهدة والدراسة 🎬
                                 </a>
                             ` : `
-                                <input type="text" id="code-${course.id}" placeholder="اكتب كود التفعيل هنا...">
-                                <button class="btn btn-primary" style="width: 100%;" onclick="activateCourse(${course.id})">
-                                    تفعيل الكورس الآن
-                                </button>
+                                <div style="background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid var(--border-color);">
+                                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 5px; font-weight:600;">لفتح هذا الكورس، تواصل مع الإدارة:</p>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="text" id="code-${course.id}" placeholder="اكتب كود أو اطلب تفعيل مباشر" style="margin:0;">
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="activateCourse(${course.id})">
+                                        تفعيل الكورس الآن ⚡
+                                    </button>
+                                </div>
                             `}
                         </div>
                     </div>
@@ -79,8 +94,9 @@
 
         async function activateCourse(courseId) {
             const code = document.getElementById(`code-${courseId}`).value.trim();
-            if (!code) return alert("من فضلك اكتب الكود أولاً!");
+            if (!code) return alert("من فضلك اكتب كود التفعيل أولاً أو تواصل مع الإدارة!");
 
+            // التحقق من الأكواد القديمة لو المستخدم لسه شغال بيها، أو تفعيل مباشر
             const { data: codeData, error } = await _supabase
                 .from('activation_codes')
                 .select('*')
@@ -90,7 +106,7 @@
                 .single();
 
             if (error || !codeData) {
-                return alert("❌ الكود غير صحيح، أو تم استخدامه من قبل، أو يخص كورس آخر!");
+                return alert("❌ الكود غير صحيح، أو تم استخدامه من قبل!");
             }
 
             await _supabase.from('student_courses').insert([{
@@ -103,7 +119,7 @@
                 used_by: currentUser.email
             }).eq('id', codeData.id);
 
-            alert("🎉 تم تفعيل الكورس بنجاح! استمتع بالمحاضرات.");
+            alert("🎉 مبروك! تم تفعيل الكورس بنجاح.");
             loadCourses();
         }
 
