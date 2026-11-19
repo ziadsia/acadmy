@@ -3,151 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشاهدة المحاضرات | منصة التفوق</title>
+    <title>مشاهدة الكورس</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Cairo', sans-serif; }
-        @keyframes moveWatermark {
-            0% { top: 12%; right: 10%; }
-            50% { top: 75%; right: 55%; }
-            100% { top: 25%; right: 75%; }
-        }
-        .watermark-anim {
-            animation: moveWatermark 16s infinite alternate ease-in-out;
-        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-    <!-- النافبار -->
-    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 id="course-title" class="text-lg md:text-xl font-black text-white truncate max-w-md">جاري التحميل...</h1>
-            <div class="flex items-center gap-3">
-                <a href="courses.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm px-4 py-2 rounded-xl transition-all border border-slate-700">
-                    ← العودة للكورسات
-                </a>
-                <button onclick="logout()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white font-bold text-sm px-4 py-2 rounded-xl transition-all border border-rose-500/30">
-                    خروج
-                </button>
-            </div>
+    <!-- الشريط العلوي -->
+    <nav class="bg-slate-900 border-b border-slate-800 px-6 py-4 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
+            <h1 id="course-title" class="text-lg md:text-xl font-black text-white truncate">جاري التحميل...</h1>
+            <a href="courses.html" class="shrink-0 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold px-4 py-2 rounded-xl transition">
+                ← العودة للكورسات
+            </a>
         </div>
     </nav>
 
-    <!-- محتوى الصفحة (المشغل + قائمة الدروس) -->
-    <main class="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8 flex-grow">
-        
-        <!-- عمود الفيديو والمرفقات -->
-        <div class="lg:col-span-2 space-y-6">
-            <div id="player-box" class="hidden relative w-full pt-[56.25%] bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
-                <div id="watermark-text" class="watermark-anim absolute text-white/30 font-black text-sm md:text-base pointer-events-none z-20 select-none"></div>
-                <iframe id="yt-player" class="absolute inset-0 w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
+    <main class="max-w-7xl mx-auto w-full px-6 py-8 flex-grow">
+        <!-- حالة التحميل -->
+        <div id="loading-box" class="text-center py-20 text-slate-400 font-bold">
+            جاري التحقق من تفعيل الكورس وتحميل المحتوى...
+        </div>
 
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <span class="text-xs font-bold text-blue-400">المحاضرة الحالية</span>
-                    <h2 id="current-lesson-title" class="text-xl font-black text-white mt-1">اختر محاضرة من القائمة للبدء</h2>
+        <!-- كورس غير مفعّل -->
+        <div id="locked-box" class="hidden bg-slate-900 border border-rose-500/40 rounded-3xl p-8 text-center max-w-lg mx-auto my-12">
+            <h2 class="text-xl font-black text-rose-400 mb-2">هذا الكورس غير مفعل</h2>
+            <p class="text-slate-400 text-sm mb-6">يجب إدخال كود التفعيل الخاص بهذا الكورس من صفحة الكورسات أولاً.</p>
+            <a href="courses.html" class="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-6 py-3 rounded-xl transition">
+                الذهاب لصفحة الكورسات
+            </a>
+        </div>
+
+        <!-- منطقة المشاهدة -->
+        <div id="player-section" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- المشغل الرئيسي -->
+            <div class="lg:col-span-2 space-y-4">
+                <div class="relative w-full pt-[56.25%] bg-black rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
+                    <iframe id="embed-player" class="hidden absolute inset-0 w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+
+                    <video id="native-player" class="hidden absolute inset-0 w-full h-full bg-black" controls controlsList="nodownload"></video>
+
+                    <div id="no-media-box" class="hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                        <p class="text-slate-300 font-extrabold mb-1">لا يوجد فيديو محدد حالياً</p>
+                        <p class="text-slate-500 text-xs">اختر درساً من القائمة أو أضف بلاي ليست / فيديو من لوحة التحكم.</p>
+                    </div>
                 </div>
-                <div id="lesson-extras" class="flex flex-wrap gap-3"></div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <span class="text-xs font-bold text-blue-400">المحتوى الحالي:</span>
+                        <h2 id="current-media-title" class="text-base font-black text-white mt-0.5">—</h2>
+                    </div>
+                    <button id="btn-play-playlist" onclick="playCoursePlaylist()"
+                        class="hidden text-xs font-extrabold bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 px-4 py-2 rounded-xl transition">
+                        ▶ تشغيل البلاي ليست الكاملة
+                    </button>
+                </div>
+            </div>
+
+            <!-- قائمة الدروس والفيديوهات -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 h-fit">
+                <h3 class="text-base font-black text-white mb-4 pb-3 border-b border-slate-800">
+                    محتوى الكورس
+                </h3>
+                <div id="lessons-container" class="space-y-2.5 max-h-[520px] overflow-y-auto pr-1"></div>
             </div>
         </div>
-
-        <!-- عمود قائمة المحاضرات -->
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-fit">
-            <h3 class="text-lg font-black text-white mb-4 flex items-center gap-2">
-                <span>📑</span> محتوى الكورس
-            </h3>
-            <div id="lessons-list" class="space-y-3">
-                <p class="text-slate-500 text-sm font-bold">جاري تحميل المحاضرات...</p>
-            </div>
-        </div>
-
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const courseId = urlParams.get('course_id');
+        let currentCourse = null;
+        let courseVideos = [];
 
-        async function initWatch() {
-            const user = await checkAuth();
-            if (!user || !courseId) return window.location.href = 'courses.html';
+        async function initWatchPage() {
+            const params = new URLSearchParams(window.location.search);
+            const courseId = Number(params.get('id'));
+            const loadingBox = document.getElementById('loading-box');
 
-            const { data: checkEnroll } = await _supabase
-                .from('student_courses')
-                .select('*')
-                .eq('student_email', user.email)
-                .eq('course_id', courseId)
-                .single();
-
-            if (!checkEnroll) {
-                alert("⛔ غير مصرح لك بدخول هذا الكورس!");
-                return window.location.href = 'courses.html';
-            }
-
-            const cleanPhone = user.email.replace('student_', '').replace('@platform.local', '').split('_')[0];
-            document.getElementById('watermark-text').innerText = cleanPhone;
-
-            const { data: course } = await _supabase.from('courses').select('title').eq('id', courseId).single();
-            if (course) document.getElementById('course-title').innerText = course.title;
-
-            const { data: lessons } = await _supabase
-                .from('lessons')
-                .select('*')
-                .eq('course_id', courseId)
-                .order('order_num');
-
-            const list = document.getElementById('lessons-list');
-            list.innerHTML = '';
-
-            if (!lessons || lessons.length === 0) {
-                list.innerHTML = '<p class="text-slate-400 text-sm">لم يتم رفع محاضرات في هذا الكورس بعد.</p>';
+            if (!courseId) {
+                window.location.href = 'courses.html';
                 return;
             }
 
-            lessons.forEach((lesson, index) => {
-                const div = document.createElement('div');
-                div.className = 'lesson-item p-4 rounded-2xl border border-slate-800 bg-slate-950/50 hover:border-blue-500/50 cursor-pointer transition-all flex items-center justify-between gap-3';
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-xl bg-slate-800 text-blue-400 font-black text-xs flex items-center justify-center shrink-0">${index + 1}</span>
-                        <span class="font-bold text-sm text-slate-200">${lesson.title}</span>
+            try {
+                // 1. جلب بيانات الكورس
+                const { data: course, error: courseErr } = await _supabase
+                    .from('courses')
+                    .select('id, title, description, playlist_id')
+                    .eq('id', courseId)
+                    .maybeSingle();
+
+                if (courseErr) throw courseErr;
+                if (!course) {
+                    window.location.href = 'courses.html';
+                    return;
+                }
+
+                currentCourse = course;
+                document.getElementById('course-title').textContent = course.title;
+
+                // 2. التحقق أن هذا الكورس مفتوح لهذا الطالب تحديداً
+                const clientId = getClientId();
+                const { data: unlockRow, error: unlockErr } = await _supabase
+                    .from('student_unlocks')
+                    .select('id')
+                    .eq('client_id', clientId)
+                    .eq('course_id', courseId)
+                    .maybeSingle();
+
+                if (unlockErr) throw unlockErr;
+
+                loadingBox.classList.add('hidden');
+
+                if (!unlockRow) {
+                    document.getElementById('locked-box').classList.remove('hidden');
+                    return;
+                }
+
+                // 3. جلب الفيديوهات الخاصة بالكورس (من أي مصدر)
+                const { data: videos, error: vidErr } = await _supabase
+                    .from('course_videos')
+                    .select('id, title, video_id, sort_order')
+                    .eq('course_id', courseId)
+                    .order('sort_order', { ascending: true })
+                    .order('id', { ascending: true });
+
+                if (vidErr) throw vidErr;
+                courseVideos = videos || [];
+
+                document.getElementById('player-section').classList.remove('hidden');
+
+                if (course.playlist_id) {
+                    document.getElementById('btn-play-playlist').classList.remove('hidden');
+                }
+
+                renderLessonsList();
+
+                // تشغيل البلاي ليست أولاً لو موجودة، وإلا أول فيديو، وإلا رسالة فارغة
+                if (course.playlist_id) {
+                    playCoursePlaylist();
+                } else if (courseVideos.length > 0) {
+                    playVideoItem(courseVideos[0]);
+                } else {
+                    showNoMedia();
+                }
+            } catch (err) {
+                loadingBox.innerHTML = `
+                    <div class="bg-rose-950/30 border border-rose-500/40 rounded-2xl p-6 max-w-md mx-auto text-rose-300">
+                        حدث خطأ أثناء تحميل الكورس: ${escapeHtml(err.message || '')}
                     </div>
-                    <span class="text-xs font-bold text-blue-500 shrink-0">تشغيل ▶️</span>
                 `;
-                div.onclick = () => playLesson(lesson, div);
-                list.appendChild(div);
-
-                if (index === 0) playLesson(lesson, div);
-            });
-        }
-
-        function playLesson(lesson, element) {
-            document.querySelectorAll('.lesson-item').forEach(el => {
-                el.classList.remove('border-blue-500', 'bg-blue-950/30');
-                el.classList.add('border-slate-800', 'bg-slate-950/50');
-            });
-            element.classList.remove('border-slate-800', 'bg-slate-950/50');
-            element.classList.add('border-blue-500', 'bg-blue-950/30');
-
-            document.getElementById('player-box').classList.remove('hidden');
-            document.getElementById('current-lesson-title').innerText = lesson.title;
-            document.getElementById('yt-player').src = `https://www.youtube-nocookie.com/embed/${lesson.youtube_id}?rel=0&modestbranding=1`;
-
-            const extras = document.getElementById('lesson-extras');
-            extras.innerHTML = '';
-            if (lesson.pdf_url) {
-                extras.innerHTML += `<a href="${lesson.pdf_url}" target="_blank" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all">📄 تحميل المذكرة (PDF)</a>`;
-            }
-            if (lesson.exam_url) {
-                extras.innerHTML += `<a href="${lesson.exam_url}" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all">📝 دخول الامتحان</a>`;
             }
         }
 
-        initWatch();
+        function playCoursePlaylist() {
+            if (!currentCourse || !currentCourse.playlist_id) return;
+            const listId = extractYouTubePlaylistId(currentCourse.playlist_id);
+            setActiveMedia(
+                `قائمة تشغيل الكورس: ${currentCourse.title}`,
+                {
+                    type: 'iframe',
+                    src: `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(listId)}&rel=0&modestbranding=1`
+                }
+            );
+        }
+
+        function playVideoItem(video) {
+            const cfg = buildVideoEmbedConfig(video.video_id);
+            setActiveMedia(video.title, cfg);
+        }
+
+        function setActiveMedia(title, cfg) {
+            const iframe = document.getElementById('embed-player');
+            const videoEl = document.getElementById('native-player');
+            const noMedia = document.getElementById('no-media-box');
+            const titleEl = document.getElementById('current-media-title');
+
+            titleEl.textContent = title;
+            iframe.classList.add('hidden');
+            videoEl.classList.add('hidden');
+            noMedia.classList.add('hidden');
+            videoEl.pause();
+
+            if (cfg.type === 'video') {
+                iframe.src = '';
+                videoEl.src = cfg.src;
+                videoEl.classList.remove('hidden');
+            } else if (cfg.type === 'iframe') {
+                videoEl.removeAttribute('src');
+                iframe.src = cfg.src;
+                iframe.classList.remove('hidden');
+            } else {
+                showNoMedia();
+            }
+        }
+
+        function showNoMedia() {
+            document.getElementById('embed-player').classList.add('hidden');
+            document.getElementById('native-player').classList.add('hidden');
+            document.getElementById('no-media-box').classList.remove('hidden');
+        }
+
+        function renderLessonsList() {
+            const container = document.getElementById('lessons-container');
+            container.innerHTML = '';
+
+            if (currentCourse && currentCourse.playlist_id) {
+                container.innerHTML += `
+                    <button onclick="playCoursePlaylist()"
+                        class="w-full text-right p-3.5 rounded-2xl bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/30 transition flex items-center justify-between gap-2">
+                        <span class="text-sm font-extrabold text-blue-200">📺 قائمة التشغيل الكاملة (Playlist)</span>
+                        <span class="text-[11px] font-bold bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-lg">YouTube</span>
+                    </button>
+                `;
+            }
+
+            if (courseVideos.length === 0 && (!currentCourse || !currentCourse.playlist_id)) {
+                container.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">لا توجد فيديوهات مضافة لهذا الكورس بعد.</p>`;
+                return;
+            }
+
+            courseVideos.forEach((vid, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right p-3.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 transition flex items-center justify-between gap-2";
+                btn.innerHTML = `
+                    <span class="text-sm font-bold text-slate-200 truncate">${idx + 1}. ${escapeHtml(vid.title)}</span>
+                    <span class="text-[11px] text-slate-400 shrink-0">تشغيل</span>
+                `;
+                btn.onclick = () => playVideoItem(vid);
+                container.appendChild(btn);
+            });
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        initWatchPage();
     </script>
 </body>
 </html>
