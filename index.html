@@ -3,603 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة المستر التعليمية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>الكورسات الدراسية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #0f172a;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --muted: #64748b;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --warning: #d97706;
-        }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--bg); color: var(--text); line-height: 1.6; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-        nav {
-            background: var(--secondary); color: white; padding: 15px 5%;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .logo { font-size: 1.4rem; font-weight: 900; color: #38bdf8; cursor: pointer; }
-        .nav-info { display: flex; align-items: center; gap: 15px; font-size: 0.9rem; }
-        .btn-logout {
-            background: var(--danger); color: white; border: none; padding: 6px 14px;
-            border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
-        }
-
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-
-        /* Auth Box */
-        .auth-box {
-            max-width: 440px; margin: 40px auto; background: var(--card);
-            padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-            border: 1px solid #e2e8f0;
-        }
-        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
-        .tab-btn {
-            flex: 1; padding: 10px; background: none; border: none; font-size: 1rem;
-            font-weight: 700; cursor: pointer; color: var(--muted); transition: 0.2s;
-        }
-        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); margin-bottom: -2px; }
-        .form-group { margin-bottom: 15px; text-align: right; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
-        .form-group input {
-            width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;
-            font-size: 1rem; outline: none; transition: 0.2s;
-        }
-        .btn-primary {
-            width: 100%; background: var(--primary); color: white; border: none;
-            padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.2s;
-        }
-        .btn-primary:hover { background: var(--primary-dark); }
-
-        /* Top Bar */
-        .top-bar {
-            background: var(--card); padding: 25px; border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 30px;
-            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;
-            border: 1px solid #e2e8f0;
-        }
-        .code-form { display: flex; gap: 10px; flex-wrap: wrap; }
-        .code-form input {
-            padding: 10px 15px; border: 2px solid #cbd5e1; border-radius: 8px;
-            font-size: 1rem; width: 220px; text-transform: uppercase; font-weight: bold; outline: none;
-        }
-        .btn-activate {
-            background: var(--success); color: white; border: none; padding: 10px 20px;
-            border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;
-        }
-
-        /* Grid & Cards */
-        .section-title { font-size: 1.35rem; font-weight: 800; margin-bottom: 20px; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px; }
-        .card {
-            background: var(--card); border-radius: 14px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
-            display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;
-        }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-        .card-header { padding: 22px; background: linear-gradient(135deg, #1e293b, #334155); color: white; }
-        .card-header-playlist { padding: 20px; background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white; }
-        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
-        .badge-free { background: #22c55e; color: white; }
-        .badge-paid { background: #f59e0b; color: white; }
-        .badge-locked { background: #ef4444; color: white; }
-        .card-body { padding: 20px; }
-        .card-body p { color: var(--muted); font-size: 0.9rem; margin-bottom: 10px; }
-        .card-footer { padding: 15px 20px; background: #f1f5f9; border-top: 1px solid #e2e8f0; }
-
-        /* Banner Header */
-        .banner-header {
-            background: linear-gradient(135deg, #0f172a, #1e293b); color: white;
-            padding: 25px; border-radius: 16px; margin-bottom: 25px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-        }
-        .btn-back {
-            background: rgba(255,255,255,0.15); color: white; border: none; padding: 8px 16px;
-            border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s;
-        }
-        .btn-back:hover { background: rgba(255,255,255,0.25); }
-
-        .video-item {
-            background: white; padding: 18px 22px; border-radius: 12px; margin-bottom: 12px;
-            border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 15px; transition: 0.2s;
-        }
-        .video-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-
-        .btn-watch { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: var(--primary); color: white; }
-        .btn-quiz { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: var(--warning); color: white; }
-        .btn-disabled { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; background: #cbd5e1; color: #475569; cursor: not-allowed; }
-        .btn-full { width: 100%; }
-
-        /* Modal */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-content {
-            background: white; width: 100%; max-width: 800px; border-radius: 16px;
-            padding: 25px; position: relative; max-height: 90vh; overflow-y: auto;
-        }
-        .close-modal {
-            position: absolute; top: 15px; left: 20px; font-size: 1.5rem; cursor: pointer;
-            background: #f1f5f9; width: 35px; height: 35px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; border: none;
-        }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 15px; background: #000; }
-        .video-wrapper iframe, .video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-        .quiz-question { margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; }
-        .quiz-option { display: block; margin-bottom: 8px; cursor: pointer; }
-        .alert { padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; font-weight: 600; font-size: 0.9rem; }
-        .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .device-tag { font-size: 0.75rem; color: #334155; background: #e2e8f0; padding: 4px 10px; border-radius: 6px; font-weight: bold; }
+        body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-<nav>
-    <div class="logo" onclick="showCoursesView()">🎓 منصة المستر التعليمية</div>
-    <div class="nav-info" id="navInfo" style="display: none;">
-        <span id="studentNameDisplay" style="font-weight: 700;"></span>
-        <span class="device-tag" id="deviceIdDisplay"></span>
-        <button class="btn-logout" onclick="logout()">خروج</button>
-    </div>
-</nav>
-
-<!-- شاشة الدخول والتسجيل -->
-<div class="container" id="authSection">
-    <div class="auth-box">
-        <div class="auth-tabs">
-            <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
-            <button class="tab-btn" onclick="switchTab('register')">حساب جديد</button>
-        </div>
-        <div id="authAlert"></div>
-
-        <div id="loginForm">
-            <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="loginPhone" placeholder="010xxxxxxxx"></div>
-            <div class="form-group"><label>كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••"></div>
-            <button class="btn-primary" onclick="login()">دخول للمنصة</button>
-        </div>
-
-        <div id="registerForm" style="display: none;">
-            <div class="form-group"><label>اسم الطالب الثلاثي</label><input type="text" id="regName" placeholder="أحمد محمد علي"></div>
-            <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="regPhone" placeholder="010xxxxxxxx"></div>
-            <div class="form-group"><label>كلمة المرور</label><input type="password" id="regPass" placeholder="اختر كلمة مرور"></div>
-            <button class="btn-primary" onclick="register()">إنشاء الحساب والدخول</button>
-        </div>
-        <p style="margin-top: 15px; font-size: 0.8rem; text-align: center; color: var(--muted);">* لوحة تحكم المدرس: <b>admin.html</b></p>
-    </div>
-</div>
-
-<!-- لوحة الطالب -->
-<div class="container" id="dashboardSection" style="display: none;">
-    <div class="top-bar">
-        <div>
-            <h2 style="font-size: 1.3rem;">أهلاً بك يا بطل 👋</h2>
-            <p style="color: var(--muted); font-size: 0.9rem;">معاك كود كورس؟ اكتبه هنا لتفعيل كل قوائم التشغيل بداخل الكورس</p>
-        </div>
-        <div>
-            <div class="code-form">
-                <input type="text" id="voucherInput" placeholder="أدخل كود الكورس">
-                <button class="btn-activate" onclick="redeemCode()">تفعيل الكود</button>
+    <!-- الشريط العلوي -->
+    <nav class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 px-6 py-4 backdrop-blur">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-black text-white">
+                منصة <span class="text-blue-500">التفوق</span>
+            </a>
+            <div class="flex items-center gap-3">
+                <span id="unlocked-count" class="hidden sm:inline-block text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl"></span>
+                <a href="index.html" class="text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl transition">
+                    الرئيسية
+                </a>
             </div>
-            <div id="codeAlert" style="margin-top: 8px;"></div>
         </div>
-    </div>
+    </nav>
 
-    <!-- المستوى 1: عرض الكورسات -->
-    <div id="coursesView">
-        <h3 class="section-title">📚 الكورسات المتاحة على المنصة</h3>
-        <div class="grid" id="coursesContainer"></div>
-    </div>
-
-    <!-- المستوى 2: عرض البلاي ليستات داخل الكورس -->
-    <div id="playlistsView" style="display: none;">
-        <div class="banner-header">
+    <!-- المحتوى الرئيسي -->
+    <main class="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
+        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-                <h2 id="selectedCourseTitle" style="margin-bottom: 5px;">اسم الكورس</h2>
-                <p id="selectedCourseDesc" style="color: #cbd5e1; font-size: 0.9rem;">وصف الكورس</p>
+                <h1 class="text-3xl font-black text-white">الكورسات المتاحة</h1>
+                <p class="text-slate-400 text-sm mt-2">
+                    أدخل كود التفعيل الخاص بالكورس المطلوب لفتحه مباشرة، بينما تظل باقي الكورسات مقفولة.
+                </p>
             </div>
-            <button class="btn-back" onclick="showCoursesView()">🔙 العودة لكل الكورسات</button>
         </div>
-        <h3 class="section-title">📂 قوائم التشغيل (Playlists) داخل الكورس</h3>
-        <div class="grid" id="playlistsContainer"></div>
-    </div>
 
-    <!-- المستوى 3: عرض الفيديوهات داخل البلاي ليست -->
-    <div id="videosView" style="display: none;">
-        <div class="banner-header">
-            <div>
-                <span id="breadcrumbCourse" style="font-size: 0.8rem; color: #38bdf8; font-weight: bold;"></span>
-                <h2 id="selectedPlaylistTitle" style="margin-bottom: 5px;">اسم البلاي ليست</h2>
-                <p id="selectedPlaylistDesc" style="color: #cbd5e1; font-size: 0.9rem;">وصف البلاي ليست</p>
-            </div>
-            <button class="btn-back" onclick="openCourse(currentCourseId)">🔙 العودة لقوائم التشغيل</button>
+        <!-- حالة التحميل -->
+        <div id="loading-box" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
         </div>
-        <h3 class="section-title">🎬 الفيديوهات والمحاضرات</h3>
-        <div id="videosContainer"></div>
-    </div>
-</div>
 
-<!-- Modal -->
-<div class="modal" id="contentModal">
-    <div class="modal-content">
-        <button class="close-modal" onclick="closeModal()">×</button>
-        <div id="modalBody"></div>
-    </div>
-</div>
+        <!-- شبكة الكورسات -->
+        <div id="courses-grid" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 
-<script src="data.js"></script>
-<script>
-    let currentCourseId = null;
-    let currentPlaylistId = null;
+        <!-- رسالة في حال عدم وجود كورسات -->
+        <div id="empty-box" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-10 text-center max-w-lg mx-auto my-10">
+            <p class="text-lg font-extrabold text-white mb-2">لا توجد كورسات مضافة حالياً</p>
+            <p class="text-slate-400 text-sm">يمكنك إضافة الكورسات وربطها بالبلاي ليست والأكواد من لوحة الأدمن.</p>
+        </div>
+    </main>
 
-    function switchTab(tab) {
-        document.getElementById('authAlert').innerHTML = '';
-        document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-        document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
-        document.querySelectorAll('.tab-btn')[0].classList.toggle('active', tab === 'login');
-        document.querySelectorAll('.tab-btn')[1].classList.toggle('active', tab === 'register');
-    }
+    <!-- مكتبة Supabase ثم ملف الإعدادات -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        let coursesList = [];
+        let unlockedCourseIds = new Set();
 
-    function getOrCreateDeviceId() {
-        let devId = localStorage.getItem('platform_device_id');
-        if (!devId) {
-            devId = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-            localStorage.setItem('platform_device_id', devId);
-        }
-        return devId;
-    }
-    const currentDeviceId = getOrCreateDeviceId();
+        async function loadCoursesPage() {
+            const clientId = getClientId();
+            const loadingBox = document.getElementById('loading-box');
+            const grid = document.getElementById('courses-grid');
+            const emptyBox = document.getElementById('empty-box');
 
-    function register() {
-        const name = document.getElementById('regName').value.trim();
-        const phone = document.getElementById('regPhone').value.trim();
-        const pass = document.getElementById('regPass').value.trim();
-        const alertBox = document.getElementById('authAlert');
+            try {
+                // جلب الكورسات مرتبة حسب تاريخ الإضافة أو المعرف
+                const { data: courses, error: coursesErr } = await _supabase
+                    .from('courses')
+                    .select('id, title, description, playlist_id')
+                    .order('id', { ascending: true });
 
-        if(!name || !phone || !pass) { alertBox.innerHTML = '<div class="alert alert-danger">يرجى إدخال جميع البيانات</div>'; return; }
-        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
-        if(users[phone]) { alertBox.innerHTML = '<div class="alert alert-danger">الرقم مسجل مسبقاً! سجل دخولك</div>'; return; }
+                if (coursesErr) throw coursesErr;
 
-        users[phone] = { name, phone, pass, deviceId: currentDeviceId, unlockedCourses: [], passedQuizzes: [] };
-        localStorage.setItem('platform_users', JSON.stringify(users));
-        localStorage.setItem('current_student_phone', phone);
-        renderDashboard();
-    }
+                // جلب الكورسات المفتوحة لهذا المتصفح/الطالب
+                const { data: unlocks, error: unlocksErr } = await _supabase
+                    .from('student_unlocks')
+                    .select('course_id')
+                    .eq('client_id', clientId);
 
-    function login() {
-        const phone = document.getElementById('loginPhone').value.trim();
-        const pass = document.getElementById('loginPass').value.trim();
-        const alertBox = document.getElementById('authAlert');
-        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+                if (unlocksErr) throw unlocksErr;
 
-        if(!users[phone]) { alertBox.innerHTML = '<div class="alert alert-danger">الرقم غير مسجل! أنشئ حساباً جديداً</div>'; return; }
-        if(users[phone].pass !== pass) { alertBox.innerHTML = '<div class="alert alert-danger">كلمة المرور خطأ</div>'; return; }
+                coursesList = courses || [];
+                unlockedCourseIds = new Set((unlocks || []).map(u => Number(u.course_id)));
 
-        if(users[phone].deviceId && users[phone].deviceId !== currentDeviceId) {
-            alertBox.innerHTML = `<div class="alert alert-danger">⛔ الحساب مقفول على جهاز آخر (${users[phone].deviceId}). تواصل مع الدعم.</div>`;
-            return;
-        }
-        if(!users[phone].deviceId) {
-            users[phone].deviceId = currentDeviceId;
-            localStorage.setItem('platform_users', JSON.stringify(users));
-        }
-        localStorage.setItem('current_student_phone', phone);
-        renderDashboard();
-    }
+                loadingBox.classList.add('hidden');
 
-    function logout() { localStorage.removeItem('current_student_phone'); location.reload(); }
+                if (coursesList.length === 0) {
+                    emptyBox.classList.remove('hidden');
+                    return;
+                }
 
-    function redeemCode() {
-        const codeInput = document.getElementById('voucherInput').value.trim().toUpperCase();
-        const alertBox = document.getElementById('codeAlert');
-        const phone = localStorage.getItem('current_student_phone');
-        if(!codeInput) return;
-
-        let codes = JSON.parse(localStorage.getItem('platform_codes')) || DEFAULT_CODES;
-        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
-        let user = users[phone];
-
-        const foundCode = codes.find(c => c.code === codeInput);
-        if(!foundCode) { alertBox.innerHTML = '<span style="color:var(--danger); font-weight:bold;">❌ كود غير صحيح!</span>'; return; }
-        if(foundCode.used) { alertBox.innerHTML = '<span style="color:var(--danger); font-weight:bold;">⚠️ كود مستخدم من قبل!</span>'; return; }
-
-        foundCode.used = true;
-        foundCode.usedBy = phone;
-        localStorage.setItem('platform_codes', JSON.stringify(codes));
-
-        if(!user.unlockedCourses) user.unlockedCourses = [];
-        foundCode.unlocksCourses.forEach(cId => {
-            if(!user.unlockedCourses.includes(cId)) user.unlockedCourses.push(cId);
-        });
-        users[phone] = user;
-        localStorage.setItem('platform_users', JSON.stringify(users));
-
-        document.getElementById('voucherInput').value = '';
-        alertBox.innerHTML = `<span style="color:var(--success); font-weight:bold;">✅ تم تفعيل (${foundCode.label}) بنجاح!</span>`;
-        
-        if(currentPlaylistId) openPlaylist(currentPlaylistId);
-        else if(currentCourseId) openCourse(currentCourseId);
-        else renderCourses();
-    }
-
-    function renderDashboard() {
-        const phone = localStorage.getItem('current_student_phone');
-        if(!phone) return;
-        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
-        let user = users[phone];
-        if(!user) { logout(); return; }
-
-        document.getElementById('authSection').style.display = 'none';
-        document.getElementById('dashboardSection').style.display = 'block';
-        document.getElementById('navInfo').style.display = 'flex';
-        document.getElementById('studentNameDisplay').innerText = `الطالب: ${user.name}`;
-        document.getElementById('deviceIdDisplay').innerText = `الجهاز: ${currentDeviceId}`;
-
-        showCoursesView();
-    }
-
-    function showCoursesView() {
-        currentCourseId = null;
-        currentPlaylistId = null;
-        document.getElementById('coursesView').style.display = 'block';
-        document.getElementById('playlistsView').style.display = 'none';
-        document.getElementById('videosView').style.display = 'none';
-        renderCourses();
-    }
-
-    function renderCourses() {
-        const phone = localStorage.getItem('current_student_phone');
-        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
-        let user = users[phone];
-        let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
-        let playlists = JSON.parse(localStorage.getItem('platform_playlists')) || DEFAULT_PLAYLISTS;
-
-        const container = document.getElementById('coursesContainer');
-        container.innerHTML = '';
-
-        courses.forEach(course => {
-            const isUnlocked = course.isFree || (user.unlockedCourses && user.unlockedCourses.includes(course.id));
-            const plCount = playlists.filter(p => p.courseId == course.id).length;
-
-            let badge = course.isFree 
-                ? '<span class="badge badge-free">كورس مجاني</span>' 
-                : (isUnlocked ? '<span class="badge badge-free">✅ مُفعّل</span>' : '<span class="badge badge-paid">🔒 كورس مدفوع</span>');
-
-            container.innerHTML += `
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            ${badge}
-                            <h3 style="margin-top:5px;">${course.title}</h3>
-                        </div>
-                        <div class="card-body">
-                            <p>${course.description}</p>
-                            <span style="font-size:0.85rem; font-weight:bold; color:var(--primary);">📂 عدد قوائم التشغيل: ${plCount}</span>
-                        </div>
+                renderCourses();
+                grid.classList.remove('hidden');
+            } catch (err) {
+                loadingBox.innerHTML = `
+                    <div class="col-span-full bg-rose-950/30 border border-rose-500/40 rounded-3xl p-6 text-center">
+                        <p class="font-extrabold text-rose-300 mb-1">حدث خطأ أثناء تحميل الكورسات</p>
+                        <p class="text-xs text-rose-200/80">${err.message || 'تأكد من إعدادات الاتصال بقاعدة البيانات'}</p>
                     </div>
-                    <div class="card-footer">
-                        <button class="btn-watch btn-full" onclick="openCourse(${course.id})">استعراض قوائم التشغيل ↗</button>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function openCourse(courseId) {
-        currentCourseId = courseId;
-        currentPlaylistId = null;
-        let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
-        let playlists = JSON.parse(localStorage.getItem('platform_playlists')) || DEFAULT_PLAYLISTS;
-        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
-
-        const course = courses.find(c => c.id == courseId);
-        const coursePlaylists = playlists.filter(p => p.courseId == courseId);
-
-        document.getElementById('coursesView').style.display = 'none';
-        document.getElementById('playlistsView').style.display = 'block';
-        document.getElementById('videosView').style.display = 'none';
-        document.getElementById('selectedCourseTitle').innerText = course.title;
-        document.getElementById('selectedCourseDesc').innerText = course.description;
-
-        const container = document.getElementById('playlistsContainer');
-        container.innerHTML = '';
-
-        if(coursePlaylists.length === 0) {
-            container.innerHTML = '<p style="color:var(--muted);">لا توجد قوائم تشغيل مضافة لهذا الكورس بعد.</p>';
-            return;
-        }
-
-        coursePlaylists.forEach(pl => {
-            const vidCount = lessons.filter(l => l.playlistId == pl.id).length;
-            container.innerHTML += `
-                <div class="card">
-                    <div>
-                        <div class="card-header-playlist">
-                            <span style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:3px 10px; border-radius:12px;">Playlist</span>
-                            <h3 style="margin-top:8px;">${pl.title}</h3>
-                        </div>
-                        <div class="card-body">
-                            <p>${pl.description}</p>
-                            <span style="font-size:0.85rem; font-weight:bold; color:var(--secondary);">🎬 عدد الفيديوهات: ${vidCount}</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <button class="btn-watch btn-full" onclick="openPlaylist(${pl.id})">فتح القائمة ومشاهدة الدروس ▶️</button>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function openPlaylist(playlistId) {
-        currentPlaylistId = playlistId;
-        const phone = localStorage.getItem('current_student_phone');
-        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
-        let user = users[phone];
-        let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
-        let playlists = JSON.parse(localStorage.getItem('platform_playlists')) || DEFAULT_PLAYLISTS;
-        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
-
-        const course = courses.find(c => c.id == currentCourseId);
-        const playlist = playlists.find(p => p.id == playlistId);
-        const plLessons = lessons.filter(l => l.playlistId == playlistId);
-        const isCourseUnlocked = course.isFree || (user.unlockedCourses && user.unlockedCourses.includes(course.id));
-
-        document.getElementById('coursesView').style.display = 'none';
-        document.getElementById('playlistsView').style.display = 'none';
-        document.getElementById('videosView').style.display = 'block';
-
-        document.getElementById('breadcrumbCourse').innerText = `الكورس: ${course.title}`;
-        document.getElementById('selectedPlaylistTitle').innerText = playlist.title;
-        document.getElementById('selectedPlaylistDesc').innerText = playlist.description;
-
-        const container = document.getElementById('videosContainer');
-        container.innerHTML = '';
-
-        if(plLessons.length === 0) {
-            container.innerHTML = '<p style="color:var(--muted);">لم يتم إضافة فيديوهات في هذه القائمة بعد.</p>';
-            return;
-        }
-
-        plLessons.forEach((lesson, index) => {
-            const isLessonAccessible = isCourseUnlocked || lesson.isFreePreview;
-            const isQuizPassed = !lesson.requiredQuizId || (user.passedQuizzes && user.passedQuizzes.includes(lesson.requiredQuizId));
-
-            let actionBtn = '';
-            if(!isLessonAccessible) {
-                actionBtn = `<button class="btn-disabled" onclick="alert('هذا الكورس مغلق! فعّل كود الكورس من الأعلى لفتح جميع قوائم التشغيل.')">🔒 مغلق (يتطلب كود الكورس)</button>`;
-            } else if(!isQuizPassed) {
-                actionBtn = `<button class="btn-quiz" onclick="openQuiz(${lesson.requiredQuizId})">📝 حل الامتحان لفتح الدرس</button>`;
-            } else {
-                actionBtn = `<button class="btn-watch" onclick="watchLesson(${lesson.id})">▶️ تشغيل الفيديو</button>`;
+                `;
             }
+        }
 
-            container.innerHTML += `
-                <div class="video-item">
-                    <div>
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-                            <span style="background:var(--secondary); color:white; padding:2px 9px; border-radius:6px; font-size:0.8rem; font-weight:bold;">${index + 1}</span>
-                            <h4 style="font-size:1.05rem;">${lesson.title}</h4>
-                            ${lesson.isFreePreview && !isCourseUnlocked ? '<span class="badge badge-free" style="margin:0;">حصة مجانية</span>' : ''}
+        function renderCourses() {
+            const grid = document.getElementById('courses-grid');
+            const countBadge = document.getElementById('unlocked-count');
+
+            countBadge.textContent = `الكورسات المفتوحة: ${unlockedCourseIds.size} من ${coursesList.length}`;
+            countBadge.classList.remove('hidden');
+
+            grid.innerHTML = '';
+
+            coursesList.forEach(course => {
+                const courseIdNum = Number(course.id);
+                const isUnlocked = unlockedCourseIds.has(courseIdNum);
+
+                grid.innerHTML += `
+                    <div class="bg-slate-900 border ${isUnlocked ? 'border-emerald-500/40' : 'border-slate-800'} rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl transition">
+                        <div>
+                            <div class="p-6 bg-gradient-to-br ${isUnlocked ? 'from-emerald-950/70 to-slate-900' : 'from-slate-800/70 to-slate-900'} border-b border-slate-800 flex items-start justify-between gap-3">
+                                <h2 class="text-xl font-black text-white leading-snug">${escapeHtml(course.title)}</h2>
+                                <span class="shrink-0 text-xs font-extrabold px-3 py-1 rounded-full ${isUnlocked ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+                                    ${isUnlocked ? 'مفتوح ✅' : 'مقفول 🔒'}
+                                </span>
+                            </div>
+
+                            <div class="p-6">
+                                <p class="text-slate-400 text-sm leading-relaxed">
+                                    ${escapeHtml(course.description || 'محتوى تعليمي منظم عبر قائمة تشغيل ومحاضرات متتابعة.')}
+                                </p>
+                            </div>
                         </div>
-                        <p style="color:var(--muted); font-size:0.85rem;">${lesson.description}</p>
+
+                        <div class="px-6 pb-6">
+                            ${isUnlocked ? `
+                                <a href="watch.html?id=${encodeURIComponent(course.id)}"
+                                   class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm flex items-center justify-center transition">
+                                    دخول ومشاهدة الكورس 🎬
+                                </a>
+                            ` : `
+                                <div class="space-y-2.5">
+                                    <input id="code-input-${course.id}" type="text" placeholder="أدخل كود تفعيل هذا الكورس"
+                                        onkeydown="if(event.key==='Enter') activateCourseCode(${course.id})"
+                                        class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition">
+                                    <button id="btn-activate-${course.id}" onclick="activateCourseCode(${course.id})"
+                                        class="w-full py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-extrabold text-sm transition">
+                                        تفعيل الكورس
+                                    </button>
+                                    <p id="msg-${course.id}" class="text-xs font-bold min-h-[18px] text-center"></p>
+                                </div>
+                            `}
+                        </div>
                     </div>
-                    <div>${actionBtn}</div>
-                </div>
-            `;
-        });
-    }
-
-    // مشغل فيديو ذكي يدعم يوتيوب، Vimeo، Google Drive، أو روابط MP4 مباشرة
-    function formatVideoPlayer(url) {
-        url = url.trim();
-        // 1. ملفات فيديو مباشرة MP4 / WebM
-        if(url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
-            return `<video controls autoplay controlsList="nodownload"><source src="${url}" type="video/mp4">متصفحك لا يدعم تشغيل الفيديو.</video>`;
-        }
-        // 2. روابط يوتيوب العادية أو المختصرة
-        if(url.includes("youtube.com/watch?v=")) {
-            const videoId = url.split("watch?v=")[1].split("&")[0];
-            return `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
-        }
-        if(url.includes("youtu.be/")) {
-            const videoId = url.split("youtu.be/")[1].split("?")[0];
-            return `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
-        }
-        // 3. روابط Google Drive
-        if(url.includes("drive.google.com") && url.includes("/view")) {
-            const embedDrive = url.replace("/view", "/preview");
-            return `<iframe src="${embedDrive}" allowfullscreen></iframe>`;
-        }
-        // 4. روابط Vimeo العادية
-        if(url.includes("vimeo.com/") && !url.includes("player.vimeo.com")) {
-            const vimeoId = url.split("vimeo.com/")[1].split("?")[0];
-            return `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" allowfullscreen></iframe>`;
-        }
-        // 5. أي رابط Embed جاهز من أي موقع آخر
-        return `<iframe src="${url}" allowfullscreen></iframe>`;
-    }
-
-    function watchLesson(id) {
-        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
-        let lesson = lessons.find(l => l.id == id);
-        const playerHtml = formatVideoPlayer(lesson.videoUrl);
-
-        document.getElementById('modalBody').innerHTML = `
-            <h3>${lesson.title}</h3>
-            <p style="color:var(--muted); margin-bottom:10px; font-size:0.9rem;">${lesson.description}</p>
-            <div class="video-wrapper">${playerHtml}</div>
-        `;
-        document.getElementById('contentModal').style.display = 'flex';
-    }
-
-    function openQuiz(quizId) {
-        let quizzes = JSON.parse(localStorage.getItem('platform_quizzes')) || DEFAULT_QUIZZES;
-        let quiz = quizzes.find(q => q.id == quizId);
-        if(!quiz) { alert('الامتحان غير متوفر'); return; }
-
-        let html = `<h3>📝 ${quiz.title}</h3><p style="color:var(--muted); margin-bottom:20px;">نسبة النجاح: ${quiz.passScore}%</p>`;
-        quiz.questions.forEach((q, idx) => {
-            html += `<div class="quiz-question"><h4>${idx+1}. ${q.q}</h4>`;
-            q.options.forEach((opt, optIdx) => {
-                html += `<label class="quiz-option"><input type="radio" name="q_${idx}" value="${optIdx}"> ${opt}</label>`;
+                `;
             });
-            html += `</div>`;
-        });
-        html += `<button class="btn-primary" onclick="submitQuiz(${quiz.id})">تسليم الإجابات</button>`;
-        document.getElementById('modalBody').innerHTML = html;
-        document.getElementById('contentModal').style.display = 'flex';
-    }
-
-    function submitQuiz(quizId) {
-        let quizzes = JSON.parse(localStorage.getItem('platform_quizzes')) || DEFAULT_QUIZZES;
-        let quiz = quizzes.find(q => q.id == quizId);
-        let correct = 0;
-        quiz.questions.forEach((q, idx) => {
-            let sel = document.querySelector(`input[name="q_${idx}"]:checked`);
-            if(sel && parseInt(sel.value) === q.answer) correct++;
-        });
-
-        let percent = Math.round((correct / quiz.questions.length) * 100);
-        let modal = document.getElementById('modalBody');
-
-        if(percent >= quiz.passScore) {
-            let phone = localStorage.getItem('current_student_phone');
-            let users = JSON.parse(localStorage.getItem('platform_users')) || {};
-            if(!users[phone].passedQuizzes) users[phone].passedQuizzes = [];
-            if(!users[phone].passedQuizzes.includes(quizId)) {
-                users[phone].passedQuizzes.push(quizId);
-                localStorage.setItem('platform_users', JSON.stringify(users));
-            }
-            modal.innerHTML = `<div style="text-align:center; padding:20px;"><h2 style="color:var(--success);">🎉 مبروك نجحت!</h2><p>درجتك: ${percent}%</p><button class="btn-primary" onclick="closeModal(); openPlaylist(currentPlaylistId);">فتح المحاضرة الآن</button></div>`;
-        } else {
-            modal.innerHTML = `<div style="text-align:center; padding:20px;"><h2 style="color:var(--danger);">❌ لم تجتز الامتحان</h2><p>درجتك: ${percent}% (المطلوب ${quiz.passScore}%)</p><button class="btn-quiz" onclick="openQuiz(${quizId})">إعادة المحاولة</button></div>`;
         }
-    }
 
-    function closeModal() { 
-        document.getElementById('contentModal').style.display = 'none'; 
-        document.getElementById('modalBody').innerHTML = ''; // لإيقاف صوت الفيديو عند الإغلاق
-    }
+        async function activateCourseCode(courseId) {
+            const input = document.getElementById(`code-input-${courseId}`);
+            const btn = document.getElementById(`btn-activate-${courseId}`);
+            const msg = document.getElementById(`msg-${courseId}`);
+            const rawCode = input.value.trim().toUpperCase();
 
-    window.onload = function() {
-        if(!localStorage.getItem('platform_courses')) localStorage.setItem('platform_courses', JSON.stringify(DEFAULT_COURSES));
-        if(!localStorage.getItem('platform_playlists')) localStorage.setItem('platform_playlists', JSON.stringify(DEFAULT_PLAYLISTS));
-        if(!localStorage.getItem('platform_lessons')) localStorage.setItem('platform_lessons', JSON.stringify(DEFAULT_LESSONS));
-        if(!localStorage.getItem('platform_quizzes')) localStorage.setItem('platform_quizzes', JSON.stringify(DEFAULT_QUIZZES));
-        if(!localStorage.getItem('platform_codes')) localStorage.setItem('platform_codes', JSON.stringify(DEFAULT_CODES));
-        renderDashboard();
-    };
-</script>
+            if (!rawCode) {
+                setMessage(msg, "من فضلك أدخل كود التفعيل أولاً", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            setMessage(msg, "جاري التحقق من الكود...", "info");
+
+            try {
+                // البحث عن الكود والتحقق أنه مرتبط بهذا الكورس تحديداً
+                const { data: codeRow, error: codeErr } = await _supabase
+                    .from('activation_codes')
+                    .select('id, code, course_id, max_uses, used_count')
+                    .eq('code', rawCode)
+                    .maybeSingle();
+
+                if (codeErr) throw codeErr;
+
+                if (!codeRow) {
+                    setMessage(msg, "❌ الكود غير موجود أو غير صحيح", "error");
+                    btn.disabled = false;
+                    return;
+                }
+
+                // التحقق أن الكود خاص بهذا الكورس فقط وليس كورس آخر
+                if (Number(codeRow.course_id) !== Number(courseId)) {
+                    setMessage(msg, "⚠️ هذا الكود مخصص لكورس آخر وليس هذا الكورس", "error");
+                    btn.disabled = false;
+                    return;
+                }
+
+                const maxUses = Number(codeRow.max_uses ?? 1);
+                const usedCount = Number(codeRow.used_count ?? 0);
+
+                if (maxUses > 0 && usedCount >= maxUses) {
+                    setMessage(msg, "❌ تم استهلاك الحد الأقصى لاستخدام هذا الكود", "error");
+                    btn.disabled = false;
+                    return;
+                }
+
+                // تسجيل فتح هذا الكورس فقط للطالب
+                const clientId = getClientId();
+                const { error: unlockErr } = await _supabase
+                    .from('student_unlocks')
+                    .upsert(
+                        [{ client_id: clientId, course_id: Number(courseId) }],
+                        { onConflict: 'client_id,course_id', ignoreDuplicates: true }
+                    );
+
+                if (unlockErr) throw unlockErr;
+
+                // تحديث عدد مرات استخدام الكود
+                await _supabase
+                    .from('activation_codes')
+                    .update({ used_count: usedCount + 1 })
+                    .eq('id', codeRow.id);
+
+                unlockedCourseIds.add(Number(courseId));
+                renderCourses();
+            } catch (err) {
+                setMessage(msg, "حدث خطأ أثناء التفعيل: " + (err.message || ""), "error");
+                btn.disabled = false;
+            }
+        }
+
+        function setMessage(el, text, type) {
+            el.textContent = text;
+            if (type === "error") {
+                el.className = "text-xs font-bold min-h-[18px] text-center text-rose-400";
+            } else if (type === "info") {
+                el.className = "text-xs font-bold min-h-[18px] text-center text-sky-400";
+            } else {
+                el.className = "text-xs font-bold min-h-[18px] text-center text-emerald-400";
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        loadCoursesPage();
+    </script>
 </body>
 </html>
