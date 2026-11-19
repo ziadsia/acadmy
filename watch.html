@@ -50,7 +50,7 @@
 
                     <div id="no-media-box" class="hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                         <p class="text-slate-300 font-extrabold mb-1">لا يوجد فيديو محدد حالياً</p>
-                        <p class="text-slate-500 text-xs">اختر درساً من القائمة أو أضف بلاي ليست / فيديو من لوحة التحكم.</p>
+                        <p class="text-slate-500 text-xs">اختر درساً من القائمة أو أضف فيديو من لوحة التحكم.</p>
                     </div>
                 </div>
 
@@ -59,10 +59,6 @@
                         <span class="text-xs font-bold text-blue-400">المحتوى الحالي:</span>
                         <h2 id="current-media-title" class="text-base font-black text-white mt-0.5">—</h2>
                     </div>
-                    <button id="btn-play-playlist" onclick="playCoursePlaylist()"
-                        class="hidden text-xs font-extrabold bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 px-4 py-2 rounded-xl transition">
-                        ▶ تشغيل البلاي ليست الكاملة
-                    </button>
                 </div>
             </div>
 
@@ -77,8 +73,79 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <script src="config.js" onerror="console.warn('config.js not found, using fallback config')"></script>
     <script>
+        const FALLBACK_URL = "https://ewtshnnehaczenjvbshg.supabase.co";
+        const FALLBACK_KEY = "sb_publishable_SUVALSaLiSmWK18S2Wn5zQ_ZSSqfraK";
+
+        if (typeof _supabase === "undefined") {
+            const url = typeof SUPABASE_URL !== "undefined" ? SUPABASE_URL : FALLBACK_URL;
+            const key = typeof SUPABASE_ANON_KEY !== "undefined" ? SUPABASE_ANON_KEY : FALLBACK_KEY;
+            window._supabase = window.supabase.createClient(url, key);
+        }
+
+        if (typeof getClientId !== "function") {
+            window.getClientId = function () {
+                let cid = localStorage.getItem("edtech_client_id");
+                if (!cid) {
+                    cid = "stu_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+                    localStorage.setItem("edtech_client_id", cid);
+                }
+                return cid;
+            };
+        }
+
+        if (typeof extractYouTubeVideoId !== "function") {
+            window.extractYouTubeVideoId = function (input) {
+                if (!input) return "";
+                const trimmed = input.trim();
+                if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+                const match = trimmed.match(/(?:v=|\/embed\/|youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
+                return match ? match[1] : trimmed;
+            };
+        }
+
+        if (typeof buildVideoEmbedConfig !== "function") {
+            window.buildVideoEmbedConfig = function (rawSource) {
+                if (!rawSource) return { type: 'none', src: '' };
+                const input = rawSource.trim();
+
+                if (/\.(mp4|webm|ogg|m3u8)(\?.*)?$/i.test(input)) {
+                    return { type: 'video', src: input };
+                }
+
+                const ytId = extractYouTubeVideoId(input);
+                if (/^[a-zA-Z0-9_-]{11}$/.test(ytId)) {
+                    return {
+                        type: 'iframe',
+                        src: `https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1`
+                    };
+                }
+
+                const vimeoMatch = input.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+                if (vimeoMatch) {
+                    return {
+                        type: 'iframe',
+                        src: `https://player.vimeo.com/video/${vimeoMatch[1]}`
+                    };
+                }
+
+                const driveMatch = input.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
+                if (driveMatch) {
+                    return {
+                        type: 'iframe',
+                        src: `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+                    };
+                }
+
+                if (/^https?:\/\//i.test(input)) {
+                    return { type: 'iframe', src: input };
+                }
+
+                return { type: 'none', src: '' };
+            };
+        }
+
         let currentCourse = null;
         let courseVideos = [];
 
@@ -93,10 +160,9 @@
             }
 
             try {
-                // 1. جلب بيانات الكورس
                 const { data: course, error: courseErr } = await _supabase
                     .from('courses')
-                    .select('id, title, description, playlist_id')
+                    .select('id, title, description')
                     .eq('id', courseId)
                     .maybeSingle();
 
@@ -109,7 +175,6 @@
                 currentCourse = course;
                 document.getElementById('course-title').textContent = course.title;
 
-                // 2. التحقق أن هذا الكورس مفتوح لهذا الطالب تحديداً
                 const clientId = getClientId();
                 const { data: unlockRow, error: unlockErr } = await _supabase
                     .from('student_unlocks')
@@ -127,7 +192,6 @@
                     return;
                 }
 
-                // 3. جلب الفيديوهات الخاصة بالكورس (من أي مصدر)
                 const { data: videos, error: vidErr } = await _supabase
                     .from('course_videos')
                     .select('id, title, video_id, sort_order')
@@ -139,17 +203,9 @@
                 courseVideos = videos || [];
 
                 document.getElementById('player-section').classList.remove('hidden');
-
-                if (course.playlist_id) {
-                    document.getElementById('btn-play-playlist').classList.remove('hidden');
-                }
-
                 renderLessonsList();
 
-                // تشغيل البلاي ليست أولاً لو موجودة، وإلا أول فيديو، وإلا رسالة فارغة
-                if (course.playlist_id) {
-                    playCoursePlaylist();
-                } else if (courseVideos.length > 0) {
+                if (courseVideos.length > 0) {
                     playVideoItem(courseVideos[0]);
                 } else {
                     showNoMedia();
@@ -161,18 +217,6 @@
                     </div>
                 `;
             }
-        }
-
-        function playCoursePlaylist() {
-            if (!currentCourse || !currentCourse.playlist_id) return;
-            const listId = extractYouTubePlaylistId(currentCourse.playlist_id);
-            setActiveMedia(
-                `قائمة تشغيل الكورس: ${currentCourse.title}`,
-                {
-                    type: 'iframe',
-                    src: `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(listId)}&rel=0&modestbranding=1`
-                }
-            );
         }
 
         function playVideoItem(video) {
@@ -215,17 +259,7 @@
             const container = document.getElementById('lessons-container');
             container.innerHTML = '';
 
-            if (currentCourse && currentCourse.playlist_id) {
-                container.innerHTML += `
-                    <button onclick="playCoursePlaylist()"
-                        class="w-full text-right p-3.5 rounded-2xl bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/30 transition flex items-center justify-between gap-2">
-                        <span class="text-sm font-extrabold text-blue-200">📺 قائمة التشغيل الكاملة (Playlist)</span>
-                        <span class="text-[11px] font-bold bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-lg">YouTube</span>
-                    </button>
-                `;
-            }
-
-            if (courseVideos.length === 0 && (!currentCourse || !currentCourse.playlist_id)) {
+            if (courseVideos.length === 0) {
                 container.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">لا توجد فيديوهات مضافة لهذا الكورس بعد.</p>`;
                 return;
             }
