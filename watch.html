@@ -12,7 +12,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-    <!-- الشريط العلوي -->
     <nav class="bg-slate-900 border-b border-slate-800 px-6 py-4 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
             <h1 id="course-title" class="text-lg md:text-xl font-black text-white truncate">جاري التحميل...</h1>
@@ -23,23 +22,19 @@
     </nav>
 
     <main class="max-w-7xl mx-auto w-full px-6 py-8 flex-grow">
-        <!-- حالة التحميل -->
         <div id="loading-box" class="text-center py-20 text-slate-400 font-bold">
-            جاري التحقق من تفعيل الكورس وتحميل المحتوى...
+            جاري التحقق من الحساب وتفعيل الكورس...
         </div>
 
-        <!-- كورس غير مفعّل -->
         <div id="locked-box" class="hidden bg-slate-900 border border-rose-500/40 rounded-3xl p-8 text-center max-w-lg mx-auto my-12">
-            <h2 class="text-xl font-black text-rose-400 mb-2">هذا الكورس غير مفعل</h2>
+            <h2 class="text-xl font-black text-rose-400 mb-2">هذا الكورس غير مفعل في حسابك</h2>
             <p class="text-slate-400 text-sm mb-6">يجب إدخال كود التفعيل الخاص بهذا الكورس من صفحة الكورسات أولاً.</p>
             <a href="courses.html" class="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-6 py-3 rounded-xl transition">
                 الذهاب لصفحة الكورسات
             </a>
         </div>
 
-        <!-- منطقة المشاهدة -->
         <div id="player-section" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- المشغل الرئيسي -->
             <div class="lg:col-span-2 space-y-4">
                 <div class="relative w-full pt-[56.25%] bg-black rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
                     <iframe id="embed-player" class="hidden absolute inset-0 w-full h-full border-0"
@@ -54,15 +49,12 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <span class="text-xs font-bold text-blue-400">المحتوى الحالي:</span>
-                        <h2 id="current-media-title" class="text-base font-black text-white mt-0.5">—</h2>
-                    </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                    <span class="text-xs font-bold text-blue-400">المحتوى الحالي:</span>
+                    <h2 id="current-media-title" class="text-base font-black text-white mt-0.5">—</h2>
                 </div>
             </div>
 
-            <!-- قائمة الدروس والفيديوهات -->
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 h-fit">
                 <h3 class="text-base font-black text-white mb-4 pb-3 border-b border-slate-800">
                     محتوى الكورس
@@ -82,17 +74,6 @@
             const url = typeof SUPABASE_URL !== "undefined" ? SUPABASE_URL : FALLBACK_URL;
             const key = typeof SUPABASE_ANON_KEY !== "undefined" ? SUPABASE_ANON_KEY : FALLBACK_KEY;
             window._supabase = window.supabase.createClient(url, key);
-        }
-
-        if (typeof getClientId !== "function") {
-            window.getClientId = function () {
-                let cid = localStorage.getItem("edtech_client_id");
-                if (!cid) {
-                    cid = "stu_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
-                    localStorage.setItem("edtech_client_id", cid);
-                }
-                return cid;
-            };
         }
 
         if (typeof extractYouTubeVideoId !== "function") {
@@ -160,6 +141,16 @@
             }
 
             try {
+                const { data: sessionData, error: sessionErr } = await _supabase.auth.getSession();
+                if (sessionErr) throw sessionErr;
+
+                if (!sessionData || !sessionData.session || !sessionData.session.user) {
+                    window.location.href = 'auth.html';
+                    return;
+                }
+
+                const userId = sessionData.session.user.id;
+
                 const { data: course, error: courseErr } = await _supabase
                     .from('courses')
                     .select('id, title, description')
@@ -175,11 +166,10 @@
                 currentCourse = course;
                 document.getElementById('course-title').textContent = course.title;
 
-                const clientId = getClientId();
                 const { data: unlockRow, error: unlockErr } = await _supabase
                     .from('student_unlocks')
                     .select('id')
-                    .eq('client_id', clientId)
+                    .eq('user_id', userId)
                     .eq('course_id', courseId)
                     .maybeSingle();
 
