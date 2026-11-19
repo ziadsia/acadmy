@@ -3,182 +3,499 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة التفوق التعليمية | مرحباً بك</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>منصة المستر التعليمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+        }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        nav {
+            background: var(--secondary); color: white; padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .logo { font-size: 1.4rem; font-weight: 900; color: #38bdf8; cursor: pointer; }
+        .nav-info { display: flex; align-items: center; gap: 15px; font-size: 0.9rem; }
+        .btn-logout {
+            background: var(--danger); color: white; border: none; padding: 6px 14px;
+            border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
+        }
+
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+
+        /* Auth Box */
+        .auth-box {
+            max-width: 440px; margin: 40px auto; background: var(--card);
+            padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
+        .tab-btn {
+            flex: 1; padding: 10px; background: none; border: none; font-size: 1rem;
+            font-weight: 700; cursor: pointer; color: var(--muted); transition: 0.2s;
+        }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); margin-bottom: -2px; }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;
+            font-size: 1rem; outline: none; transition: 0.2s;
+        }
+        .btn-primary {
+            width: 100%; background: var(--primary); color: white; border: none;
+            padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--card); padding: 25px; border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 30px;
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .code-form { display: flex; gap: 10px; flex-wrap: wrap; }
+        .code-form input {
+            padding: 10px 15px; border: 2px solid #cbd5e1; border-radius: 8px;
+            font-size: 1rem; width: 220px; text-transform: uppercase; font-weight: bold; outline: none;
+        }
+        .btn-activate {
+            background: var(--success); color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+
+        /* Courses Grid */
+        .section-title { font-size: 1.35rem; font-weight: 800; margin-bottom: 20px; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px; }
+        .card {
+            background: var(--card); border-radius: 14px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .card-header { padding: 22px; background: linear-gradient(135deg, #1e293b, #334155); color: white; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
+        .badge-free { background: #22c55e; color: white; }
+        .badge-paid { background: #f59e0b; color: white; }
+        .badge-locked { background: #ef4444; color: white; }
+        .card-body { padding: 20px; }
+        .card-body p { color: var(--muted); font-size: 0.9rem; margin-bottom: 10px; }
+        .card-footer { padding: 15px 20px; background: #f1f5f9; border-top: 1px solid #e2e8f0; }
+
+        /* Playlist View */
+        .playlist-header {
+            background: linear-gradient(135deg, #0f172a, #1e293b); color: white;
+            padding: 25px; border-radius: 16px; margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .btn-back {
+            background: rgba(255,255,255,0.15); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.25); }
+
+        .playlist-item {
+            background: white; padding: 18px 22px; border-radius: 12px; margin-bottom: 12px;
+            border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px; transition: 0.2s;
+        }
+        .playlist-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+
+        .btn-watch { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: var(--primary); color: white; }
+        .btn-quiz { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: var(--warning); color: white; }
+        .btn-disabled { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; background: #cbd5e1; color: #475569; cursor: not-allowed; }
+        .btn-full { width: 100%; }
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-content {
+            background: white; width: 100%; max-width: 780px; border-radius: 16px;
+            padding: 25px; position: relative; max-height: 90vh; overflow-y: auto;
+        }
+        .close-modal {
+            position: absolute; top: 15px; left: 20px; font-size: 1.5rem; cursor: pointer;
+            background: #f1f5f9; width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; border: none;
+        }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 15px; background: #000; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .quiz-question { margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .quiz-option { display: block; margin-bottom: 8px; cursor: pointer; }
+        .alert { padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; font-weight: 600; font-size: 0.9rem; }
+        .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .device-tag { font-size: 0.75rem; color: #334155; background: #e2e8f0; padding: 4px 10px; border-radius: 6px; font-weight: bold; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+<body>
 
-    <!-- شريط التنقل العلوي (Navbar) -->
-    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-500 text-white rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-600/30">
-                    🎓
-                </div>
-                <span class="text-xl font-black text-white tracking-tight">منصة <span class="text-blue-500">التفوق</span></span>
-            </div>
+<nav>
+    <div class="logo" onclick="showCoursesView()">🎓 منصة المستر التعليمية</div>
+    <div class="nav-info" id="navInfo" style="display: none;">
+        <span id="studentNameDisplay" style="font-weight: 700;"></span>
+        <span class="device-tag" id="deviceIdDisplay"></span>
+        <button class="btn-logout" onclick="logout()">خروج</button>
+    </div>
+</nav>
 
-            <div class="flex items-center gap-3">
-                <a href="#auth-section" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/25 transition-all">
-                    دخول الطلاب 🚀
-                </a>
-            </div>
+<!-- شاشة الدخول والتسجيل -->
+<div class="container" id="authSection">
+    <div class="auth-box">
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
+            <button class="tab-btn" onclick="switchTab('register')">حساب جديد</button>
         </div>
-    </nav>
+        <div id="authAlert"></div>
 
-    <!-- قسم الـ Hero (البانر الرئيسي الجذاب) -->
-    <header class="relative overflow-hidden py-20 px-6 flex-grow flex items-center">
-        <!-- إضاءات خلفية جمالية -->
-        <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-10 left-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-            <div class="text-center lg:text-right space-y-6">
-                <span class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-extrabold px-4 py-2 rounded-full">
-                    ✨ بوابتك الأولى نحو التفوق الدراسي والدرجات النهائية
-                </span>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-white tracking-tight">
-                    تعلم ببساطة، <br>وحقق <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">أحلامك التعليمية</span>
-                </h1>
-                <p class="text-slate-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    منصة تعليمية متكاملة تقدم لك شرحاً مبسطاً، مذكرات تفصيلية، ومتابعة دقيقة لمستواك الدراسي من أفضل أساتذة المنهج.
-                </p>
-                <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
-                    <a href="#auth-section" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-8 py-3.5 rounded-2xl shadow-xl shadow-blue-600/30 transition-all transform active:scale-95">
-                        ابدأ المذاكرة الآن 🎯
-                    </a>
-                </div>
-            </div>
-
-            <!-- بطاقة تسجيل الدخول السريعة في الواجهة -->
-            <div id="auth-section" class="w-full max-w-md mx-auto bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
-                <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-2xl shadow-md">
-                    🔒
-                </div>
-                <h3 class="text-2xl font-black text-center text-white mb-1">تسجيل الدخول للحساب</h3>
-                <p class="text-slate-400 text-xs text-center mb-6">أدخل رقم موبايلك وكلمة المرور للوصول لكورساتك</p>
-
-                <!-- أزرار التبويب (دخول / حساب جديد) -->
-                <div class="grid grid-cols-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 mb-6">
-                    <button id="tab-login" onclick="switchTab('login')" class="py-2.5 rounded-xl font-bold text-xs bg-blue-600 text-white shadow transition-all">
-                        تسجيل الدخول
-                    </button>
-                    <button id="tab-signup" onclick="switchTab('signup')" class="py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition-all">
-                        حساب جديد
-                    </button>
-                </div>
-
-                <!-- الحقول -->
-                <div class="space-y-4">
-                    <div class="relative">
-                        <span class="absolute right-4 top-3.5 text-base opacity-70">📱</span>
-                        <input type="tel" id="phone" placeholder="رقم الموبايل (01012345678)" dir="ltr" 
-                            class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-right text-white placeholder-slate-600 outline-none text-sm transition-all">
-                    </div>
-                    <div class="relative">
-                        <span class="absolute right-4 top-3.5 text-base opacity-70">🔒</span>
-                        <input type="password" id="password" placeholder="كلمة المرور" 
-                            class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-2xl py-3.5 pr-12 pl-4 text-white placeholder-slate-600 outline-none text-sm transition-all">
-                    </div>
-
-                    <button id="submit-btn" onclick="handleAuth()" 
-                        class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 transition-all">
-                        دخول للمنصة 🚀
-                    </button>
-                </div>
-
-                <p id="msg" class="text-center text-xs font-bold mt-4 min-h-[20px]"></p>
-            </div>
+        <div id="loginForm">
+            <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="loginPhone" placeholder="010xxxxxxxx"></div>
+            <div class="form-group"><label>كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+            <button class="btn-primary" onclick="login()">دخول للمنصة</button>
         </div>
-    </header>
 
-    <!-- الفوتر -->
-    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-slate-500 text-xs font-semibold">
-        جميع الحقوق محفوظة © 2026 منصة التفوق التعليمية
-    </footer>
+        <div id="registerForm" style="display: none;">
+            <div class="form-group"><label>اسم الطالب الثلاثي</label><input type="text" id="regName" placeholder="أحمد محمد علي"></div>
+            <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="regPhone" placeholder="010xxxxxxxx"></div>
+            <div class="form-group"><label>كلمة المرور</label><input type="password" id="regPass" placeholder="اختر كلمة مرور"></div>
+            <button class="btn-primary" onclick="register()">إنشاء الحساب والدخول</button>
+        </div>
+        <p style="margin-top: 15px; font-size: 0.8rem; text-align: center; color: var(--muted);">* لوحة تحكم المدرس: <b>admin.html</b></p>
+    </div>
+</div>
 
-    <script src="config.js"></script>
-    <script>
-        let mode = 'login';
+<!-- لوحة الطالب -->
+<div class="container" id="dashboardSection" style="display: none;">
+    <div class="top-bar">
+        <div>
+            <h2 style="font-size: 1.3rem;">أهلاً بك يا بطل 👋</h2>
+            <p style="color: var(--muted); font-size: 0.9rem;">معاك كود كورس؟ اكتبه هنا لتفعيل البلاي ليست كاملة</p>
+        </div>
+        <div>
+            <div class="code-form">
+                <input type="text" id="voucherInput" placeholder="أدخل كود الكورس">
+                <button class="btn-activate" onclick="redeemCode()">تفعيل الكود</button>
+            </div>
+            <div id="codeAlert" style="margin-top: 8px;"></div>
+        </div>
+    </div>
 
-        _supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) window.location.href = 'courses.html';
+    <!-- عرض الكورسات -->
+    <div id="coursesView">
+        <h3 class="section-title">📚 الكورسات المتاحة على المنصة</h3>
+        <div class="grid" id="coursesContainer"></div>
+    </div>
+
+    <!-- عرض البلاي ليست (دروس الكورس المختار) -->
+    <div id="playlistView" style="display: none;">
+        <div class="playlist-header">
+            <div>
+                <h2 id="selectedCourseTitle" style="margin-bottom: 5px;">اسم الكورس</h2>
+                <p id="selectedCourseDesc" style="color: #cbd5e1; font-size: 0.9rem;">وصف الكورس</p>
+            </div>
+            <button class="btn-back" onclick="showCoursesView()">🔙 العودة لكل الكورسات</button>
+        </div>
+        <h3 class="section-title">🎬 محتويات الكورس (قائمة التشغيل)</h3>
+        <div id="playlistContainer"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="contentModal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal()">×</button>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+    let currentCourseId = null;
+
+    function switchTab(tab) {
+        document.getElementById('authAlert').innerHTML = '';
+        document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+        document.querySelectorAll('.tab-btn')[0].classList.toggle('active', tab === 'login');
+        document.querySelectorAll('.tab-btn')[1].classList.toggle('active', tab === 'register');
+    }
+
+    function getOrCreateDeviceId() {
+        let devId = localStorage.getItem('platform_device_id');
+        if (!devId) {
+            devId = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            localStorage.setItem('platform_device_id', devId);
+        }
+        return devId;
+    }
+    const currentDeviceId = getOrCreateDeviceId();
+
+    function register() {
+        const name = document.getElementById('regName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const pass = document.getElementById('regPass').value.trim();
+        const alertBox = document.getElementById('authAlert');
+
+        if(!name || !phone || !pass) { alertBox.innerHTML = '<div class="alert alert-danger">يرجى إدخال جميع البيانات</div>'; return; }
+        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+        if(users[phone]) { alertBox.innerHTML = '<div class="alert alert-danger">الرقم مسجل مسبقاً! سجل دخولك</div>'; return; }
+
+        users[phone] = { name, phone, pass, deviceId: currentDeviceId, unlockedCourses: [], passedQuizzes: [] };
+        localStorage.setItem('platform_users', JSON.stringify(users));
+        localStorage.setItem('current_student_phone', phone);
+        renderDashboard();
+    }
+
+    function login() {
+        const phone = document.getElementById('loginPhone').value.trim();
+        const pass = document.getElementById('loginPass').value.trim();
+        const alertBox = document.getElementById('authAlert');
+        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+
+        if(!users[phone]) { alertBox.innerHTML = '<div class="alert alert-danger">الرقم غير مسجل! أنشئ حساباً جديداً</div>'; return; }
+        if(users[phone].pass !== pass) { alertBox.innerHTML = '<div class="alert alert-danger">كلمة المرور خطأ</div>'; return; }
+
+        if(users[phone].deviceId && users[phone].deviceId !== currentDeviceId) {
+            alertBox.innerHTML = `<div class="alert alert-danger">⛔ الحساب مقفول على جهاز آخر (${users[phone].deviceId}). تواصل مع الدعم.</div>`;
+            return;
+        }
+        if(!users[phone].deviceId) {
+            users[phone].deviceId = currentDeviceId;
+            localStorage.setItem('platform_users', JSON.stringify(users));
+        }
+        localStorage.setItem('current_student_phone', phone);
+        renderDashboard();
+    }
+
+    function logout() { localStorage.removeItem('current_student_phone'); location.reload(); }
+
+    function redeemCode() {
+        const codeInput = document.getElementById('voucherInput').value.trim().toUpperCase();
+        const alertBox = document.getElementById('codeAlert');
+        const phone = localStorage.getItem('current_student_phone');
+        if(!codeInput) return;
+
+        let codes = JSON.parse(localStorage.getItem('platform_codes')) || DEFAULT_CODES;
+        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+        let user = users[phone];
+
+        const foundCode = codes.find(c => c.code === codeInput);
+        if(!foundCode) { alertBox.innerHTML = '<span style="color:var(--danger); font-weight:bold;">❌ كود غير صحيح!</span>'; return; }
+        if(foundCode.used) { alertBox.innerHTML = '<span style="color:var(--danger); font-weight:bold;">⚠️ كود مستخدم من قبل!</span>'; return; }
+
+        foundCode.used = true;
+        foundCode.usedBy = phone;
+        localStorage.setItem('platform_codes', JSON.stringify(codes));
+
+        if(!user.unlockedCourses) user.unlockedCourses = [];
+        foundCode.unlocksCourses.forEach(cId => {
+            if(!user.unlockedCourses.includes(cId)) user.unlockedCourses.push(cId);
+        });
+        users[phone] = user;
+        localStorage.setItem('platform_users', JSON.stringify(users));
+
+        document.getElementById('voucherInput').value = '';
+        alertBox.innerHTML = `<span style="color:var(--success); font-weight:bold;">✅ تم تفعيل (${foundCode.label}) بنجاح!</span>`;
+        if(currentCourseId) openCourse(currentCourseId); else renderCourses();
+    }
+
+    function renderDashboard() {
+        const phone = localStorage.getItem('current_student_phone');
+        if(!phone) return;
+        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+        let user = users[phone];
+        if(!user) { logout(); return; }
+
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('dashboardSection').style.display = 'block';
+        document.getElementById('navInfo').style.display = 'flex';
+        document.getElementById('studentNameDisplay').innerText = `الطالب: ${user.name}`;
+        document.getElementById('deviceIdDisplay').innerText = `الجهاز: ${currentDeviceId}`;
+
+        renderCourses();
+    }
+
+    function showCoursesView() {
+        currentCourseId = null;
+        document.getElementById('coursesView').style.display = 'block';
+        document.getElementById('playlistView').style.display = 'none';
+        renderCourses();
+    }
+
+    function renderCourses() {
+        const phone = localStorage.getItem('current_student_phone');
+        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+        let user = users[phone];
+        let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
+        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
+
+        const container = document.getElementById('coursesContainer');
+        container.innerHTML = '';
+
+        courses.forEach(course => {
+            const isUnlocked = course.isFree || (user.unlockedCourses && user.unlockedCourses.includes(course.id));
+            const courseLessonsCount = lessons.filter(l => l.courseId == course.id).length;
+
+            let badge = course.isFree 
+                ? '<span class="badge badge-free">كورس مجاني</span>' 
+                : (isUnlocked ? '<span class="badge badge-free">✅ مُفعّل</span>' : '<span class="badge badge-paid">🔒 كورس مدفوع</span>');
+
+            container.innerHTML += `
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            ${badge}
+                            <h3 style="margin-top:5px;">${course.title}</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>${course.description}</p>
+                            <span style="font-size:0.8rem; font-weight:bold; color:var(--primary);">🎬 عدد المحاضرات: ${courseLessonsCount}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn-watch btn-full" onclick="openCourse(${course.id})">دخول قائمة التشغيل (Playlist) ↗</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function openCourse(courseId) {
+        currentCourseId = courseId;
+        const phone = localStorage.getItem('current_student_phone');
+        let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+        let user = users[phone];
+        let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
+        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
+
+        const course = courses.find(c => c.id == courseId);
+        const courseLessons = lessons.filter(l => l.courseId == courseId);
+        const isCourseUnlocked = course.isFree || (user.unlockedCourses && user.unlockedCourses.includes(course.id));
+
+        document.getElementById('coursesView').style.display = 'none';
+        document.getElementById('playlistView').style.display = 'block';
+        document.getElementById('selectedCourseTitle').innerText = course.title;
+        document.getElementById('selectedCourseDesc').innerText = course.description;
+
+        const container = document.getElementById('playlistContainer');
+        container.innerHTML = '';
+
+        if(courseLessons.length === 0) {
+            container.innerHTML = '<p style="color:var(--muted);">لم يتم إضافة فيديوهات لهذا الكورس بعد.</p>';
+            return;
+        }
+
+        courseLessons.forEach((lesson, index) => {
+            const isLessonAccessible = isCourseUnlocked || lesson.isFreePreview;
+            const isQuizPassed = !lesson.requiredQuizId || (user.passedQuizzes && user.passedQuizzes.includes(lesson.requiredQuizId));
+
+            let actionBtn = '';
+            if(!isLessonAccessible) {
+                actionBtn = `<button class="btn-disabled" onclick="alert('هذا الكورس مغلق! فعّل كود الكورس من الأعلى لفتح جميع المحاضرات.')">🔒 مغلق (يتطلب كود الكورس)</button>`;
+            } else if(!isQuizPassed) {
+                actionBtn = `<button class="btn-quiz" onclick="openQuiz(${lesson.requiredQuizId})">📝 حل الامتحان لفتح الدرس</button>`;
+            } else {
+                actionBtn = `<button class="btn-watch" onclick="watchLesson(${lesson.id})">▶️ تشغيل الفيديو</button>`;
+            }
+
+            container.innerHTML += `
+                <div class="playlist-item">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                            <span style="background:var(--secondary); color:white; padding:2px 9px; border-radius:6px; font-size:0.8rem; font-weight:bold;">${index + 1}</span>
+                            <h4 style="font-size:1.05rem;">${lesson.title}</h4>
+                            ${lesson.isFreePreview && !isCourseUnlocked ? '<span class="badge badge-free" style="margin:0;">حصة مجانية</span>' : ''}
+                        </div>
+                        <p style="color:var(--muted); font-size:0.85rem;">${lesson.description}</p>
+                    </div>
+                    <div>${actionBtn}</div>
+                </div>
+            `;
+        });
+    }
+
+    function watchLesson(id) {
+        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
+        let lesson = lessons.find(l => l.id == id);
+        let embedUrl = lesson.videoUrl;
+        if(embedUrl.includes("watch?v=")) embedUrl = embedUrl.replace("watch?v=", "embed/");
+        else if(embedUrl.includes("youtu.be/")) embedUrl = embedUrl.replace("youtu.be/", "www.youtube.com/embed/");
+
+        document.getElementById('modalBody').innerHTML = `
+            <h3>${lesson.title}</h3>
+            <p style="color:var(--muted); margin-bottom:10px; font-size:0.9rem;">${lesson.description}</p>
+            <div class="video-wrapper"><iframe src="${embedUrl}" allowfullscreen></iframe></div>
+        `;
+        document.getElementById('contentModal').style.display = 'flex';
+    }
+
+    function openQuiz(quizId) {
+        let quizzes = JSON.parse(localStorage.getItem('platform_quizzes')) || DEFAULT_QUIZZES;
+        let quiz = quizzes.find(q => q.id == quizId);
+        if(!quiz) { alert('الامتحان غير متوفر'); return; }
+
+        let html = `<h3>📝 ${quiz.title}</h3><p style="color:var(--muted); margin-bottom:20px;">نسبة النجاح: ${quiz.passScore}%</p>`;
+        quiz.questions.forEach((q, idx) => {
+            html += `<div class="quiz-question"><h4>${idx+1}. ${q.q}</h4>`;
+            q.options.forEach((opt, optIdx) => {
+                html += `<label class="quiz-option"><input type="radio" name="q_${idx}" value="${optIdx}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+        });
+        html += `<button class="btn-primary" onclick="submitQuiz(${quiz.id})">تسليم الإجابات</button>`;
+        document.getElementById('modalBody').innerHTML = html;
+        document.getElementById('contentModal').style.display = 'flex';
+    }
+
+    function submitQuiz(quizId) {
+        let quizzes = JSON.parse(localStorage.getItem('platform_quizzes')) || DEFAULT_QUIZZES;
+        let quiz = quizzes.find(q => q.id == quizId);
+        let correct = 0;
+        quiz.questions.forEach((q, idx) => {
+            let sel = document.querySelector(`input[name="q_${idx}"]:checked`);
+            if(sel && parseInt(sel.value) === q.answer) correct++;
         });
 
-        function switchTab(newMode) {
-            mode = newMode;
-            const loginBtn = document.getElementById('tab-login');
-            const signupBtn = document.getElementById('tab-signup');
-            const submitBtn = document.getElementById('submit-btn');
+        let percent = Math.round((correct / quiz.questions.length) * 100);
+        let modal = document.getElementById('modalBody');
 
-            if (mode === 'login') {
-                loginBtn.className = "py-2.5 rounded-xl font-bold text-xs bg-blue-600 text-white shadow transition-all";
-                signupBtn.className = "py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition-all";
-                submitBtn.innerHTML = 'دخول للمنصة 🚀';
-            } else {
-                signupBtn.className = "py-2.5 rounded-xl font-bold text-xs bg-blue-600 text-white shadow transition-all";
-                loginBtn.className = "py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition-all";
-                submitBtn.innerHTML = 'إنشاء حساب جديد ✨';
+        if(percent >= quiz.passScore) {
+            let phone = localStorage.getItem('current_student_phone');
+            let users = JSON.parse(localStorage.getItem('platform_users')) || {};
+            if(!users[phone].passedQuizzes) users[phone].passedQuizzes = [];
+            if(!users[phone].passedQuizzes.includes(quizId)) {
+                users[phone].passedQuizzes.push(quizId);
+                localStorage.setItem('platform_users', JSON.stringify(users));
             }
-            document.getElementById('msg').innerText = '';
+            modal.innerHTML = `<div style="text-align:center; padding:20px;"><h2 style="color:var(--success);">🎉 مبروك نجحت!</h2><p>درجتك: ${percent}%</p><button class="btn-primary" onclick="closeModal(); openCourse(currentCourseId);">فتح المحاضرة الآن</button></div>`;
+        } else {
+            modal.innerHTML = `<div style="text-align:center; padding:20px;"><h2 style="color:var(--danger);">❌ لم تجتز الامتحان</h2><p>درجتك: ${percent}% (المطلوب ${quiz.passScore}%)</p><button class="btn-quiz" onclick="openQuiz(${quizId})">إعادة المحاولة</button></div>`;
         }
+    }
 
-        async function handleAuth() {
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const msg = document.getElementById('msg');
-            const btn = document.getElementById('submit-btn');
+    function closeModal() { document.getElementById('contentModal').style.display = 'none'; }
 
-            if (!phone || !password) {
-                msg.className = "text-center text-xs font-bold mt-4 text-rose-400";
-                return msg.innerText = "من فضلك اكتب رقم الموبايل وكلمة المرور";
-            }
-
-            const fakeEmail = `student_${phone.replace(/\s+/g, '')}@platform.local`;
-            btn.disabled = true;
-            btn.innerHTML = 'جاري التحقق... ⏳';
-            msg.innerText = "";
-
-            if (mode === 'login') {
-                const { error } = await _supabase.auth.signInWithPassword({ email: fakeEmail, password });
-                btn.disabled = false;
-                btn.innerHTML = 'دخول للمنصة 🚀';
-
-                if (error) {
-                    msg.className = "text-center text-xs font-bold mt-4 text-rose-400";
-                    msg.innerText = "❌ رقم الموبايل أو كلمة المرور غير صحيحة!";
-                } else {
-                    window.location.href = 'courses.html';
-                }
-            } else {
-                let { error } = await _supabase.auth.signUp({ email: fakeEmail, password });
-                
-                if (error && (error.message.includes('rate limit') || error.message.includes('Over Request Limit'))) {
-                    const uniqueEmail = `student_${phone.replace(/\s+/g, '')}_${Math.floor(Math.random() * 1000)}@platform.local`;
-                    const retry = await _supabase.auth.signUp({ email: uniqueEmail, password });
-                    error = retry.error;
-                }
-
-                btn.disabled = false;
-                btn.innerHTML = 'إنشاء حساب جديد ✨';
-
-                if (error) {
-                    msg.className = "text-center text-xs font-bold mt-4 text-rose-400";
-                    msg.innerText = error.message.includes('already registered') ? "⚠️ الرقم مسجل من قبل، سجل دخول مباشرة!" : "خطأ: " + error.message;
-                } else {
-                    msg.className = "text-center text-xs font-bold mt-4 text-emerald-400";
-                    msg.innerText = "🎉 تم إنشاء حسابك بنجاح! جاري تحويلك...";
-                    setTimeout(() => window.location.href = 'courses.html', 900);
-                }
-            }
-        }
-
-        document.addEventListener('keypress', e => { if (e.key === 'Enter') handleAuth(); });
-    </script>
+    window.onload = function() {
+        if(!localStorage.getItem('platform_courses')) localStorage.setItem('platform_courses', JSON.stringify(DEFAULT_COURSES));
+        if(!localStorage.getItem('platform_lessons')) localStorage.setItem('platform_lessons', JSON.stringify(DEFAULT_LESSONS));
+        if(!localStorage.getItem('platform_quizzes')) localStorage.setItem('platform_quizzes', JSON.stringify(DEFAULT_QUIZZES));
+        if(!localStorage.getItem('platform_codes')) localStorage.setItem('platform_codes', JSON.stringify(DEFAULT_CODES));
+        renderDashboard();
+    };
+</script>
 </body>
 </html>
