@@ -19,8 +19,8 @@
             --warning: #d97706;
         }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--bg); color: var(--text); line-height: 1.6; animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         nav {
             background: var(--secondary); color: white; padding: 15px 5%;
@@ -77,7 +77,7 @@
             border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;
         }
 
-        /* Courses Grid */
+        /* Grid & Cards */
         .section-title { font-size: 1.35rem; font-weight: 800; margin-bottom: 20px; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px; }
         .card {
@@ -87,6 +87,7 @@
         }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
         .card-header { padding: 22px; background: linear-gradient(135deg, #1e293b, #334155); color: white; }
+        .card-header-playlist { padding: 20px; background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white; }
         .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
         .badge-free { background: #22c55e; color: white; }
         .badge-paid { background: #f59e0b; color: white; }
@@ -95,8 +96,8 @@
         .card-body p { color: var(--muted); font-size: 0.9rem; margin-bottom: 10px; }
         .card-footer { padding: 15px 20px; background: #f1f5f9; border-top: 1px solid #e2e8f0; }
 
-        /* Playlist View */
-        .playlist-header {
+        /* Banner Header */
+        .banner-header {
             background: linear-gradient(135deg, #0f172a, #1e293b); color: white;
             padding: 25px; border-radius: 16px; margin-bottom: 25px;
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
@@ -107,12 +108,12 @@
         }
         .btn-back:hover { background: rgba(255,255,255,0.25); }
 
-        .playlist-item {
+        .video-item {
             background: white; padding: 18px 22px; border-radius: 12px; margin-bottom: 12px;
             border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;
             flex-wrap: wrap; gap: 15px; transition: 0.2s;
         }
-        .playlist-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .video-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
 
         .btn-watch { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: var(--primary); color: white; }
         .btn-quiz { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: var(--warning); color: white; }
@@ -125,7 +126,7 @@
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
         }
         .modal-content {
-            background: white; width: 100%; max-width: 780px; border-radius: 16px;
+            background: white; width: 100%; max-width: 800px; border-radius: 16px;
             padding: 25px; position: relative; max-height: 90vh; overflow-y: auto;
         }
         .close-modal {
@@ -134,7 +135,7 @@
             display: flex; align-items: center; justify-content: center; border: none;
         }
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 15px; background: #000; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .video-wrapper iframe, .video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
         .quiz-question { margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; }
         .quiz-option { display: block; margin-bottom: 8px; cursor: pointer; }
         .alert { padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; font-weight: 600; font-size: 0.9rem; }
@@ -183,7 +184,7 @@
     <div class="top-bar">
         <div>
             <h2 style="font-size: 1.3rem;">أهلاً بك يا بطل 👋</h2>
-            <p style="color: var(--muted); font-size: 0.9rem;">معاك كود كورس؟ اكتبه هنا لتفعيل البلاي ليست كاملة</p>
+            <p style="color: var(--muted); font-size: 0.9rem;">معاك كود كورس؟ اكتبه هنا لتفعيل كل قوائم التشغيل بداخل الكورس</p>
         </div>
         <div>
             <div class="code-form">
@@ -194,23 +195,37 @@
         </div>
     </div>
 
-    <!-- عرض الكورسات -->
+    <!-- المستوى 1: عرض الكورسات -->
     <div id="coursesView">
         <h3 class="section-title">📚 الكورسات المتاحة على المنصة</h3>
         <div class="grid" id="coursesContainer"></div>
     </div>
 
-    <!-- عرض البلاي ليست (دروس الكورس المختار) -->
-    <div id="playlistView" style="display: none;">
-        <div class="playlist-header">
+    <!-- المستوى 2: عرض البلاي ليستات داخل الكورس -->
+    <div id="playlistsView" style="display: none;">
+        <div class="banner-header">
             <div>
                 <h2 id="selectedCourseTitle" style="margin-bottom: 5px;">اسم الكورس</h2>
                 <p id="selectedCourseDesc" style="color: #cbd5e1; font-size: 0.9rem;">وصف الكورس</p>
             </div>
             <button class="btn-back" onclick="showCoursesView()">🔙 العودة لكل الكورسات</button>
         </div>
-        <h3 class="section-title">🎬 محتويات الكورس (قائمة التشغيل)</h3>
-        <div id="playlistContainer"></div>
+        <h3 class="section-title">📂 قوائم التشغيل (Playlists) داخل الكورس</h3>
+        <div class="grid" id="playlistsContainer"></div>
+    </div>
+
+    <!-- المستوى 3: عرض الفيديوهات داخل البلاي ليست -->
+    <div id="videosView" style="display: none;">
+        <div class="banner-header">
+            <div>
+                <span id="breadcrumbCourse" style="font-size: 0.8rem; color: #38bdf8; font-weight: bold;"></span>
+                <h2 id="selectedPlaylistTitle" style="margin-bottom: 5px;">اسم البلاي ليست</h2>
+                <p id="selectedPlaylistDesc" style="color: #cbd5e1; font-size: 0.9rem;">وصف البلاي ليست</p>
+            </div>
+            <button class="btn-back" onclick="openCourse(currentCourseId)">🔙 العودة لقوائم التشغيل</button>
+        </div>
+        <h3 class="section-title">🎬 الفيديوهات والمحاضرات</h3>
+        <div id="videosContainer"></div>
     </div>
 </div>
 
@@ -225,6 +240,7 @@
 <script src="data.js"></script>
 <script>
     let currentCourseId = null;
+    let currentPlaylistId = null;
 
     function switchTab(tab) {
         document.getElementById('authAlert').innerHTML = '';
@@ -310,7 +326,10 @@
 
         document.getElementById('voucherInput').value = '';
         alertBox.innerHTML = `<span style="color:var(--success); font-weight:bold;">✅ تم تفعيل (${foundCode.label}) بنجاح!</span>`;
-        if(currentCourseId) openCourse(currentCourseId); else renderCourses();
+        
+        if(currentPlaylistId) openPlaylist(currentPlaylistId);
+        else if(currentCourseId) openCourse(currentCourseId);
+        else renderCourses();
     }
 
     function renderDashboard() {
@@ -326,13 +345,15 @@
         document.getElementById('studentNameDisplay').innerText = `الطالب: ${user.name}`;
         document.getElementById('deviceIdDisplay').innerText = `الجهاز: ${currentDeviceId}`;
 
-        renderCourses();
+        showCoursesView();
     }
 
     function showCoursesView() {
         currentCourseId = null;
+        currentPlaylistId = null;
         document.getElementById('coursesView').style.display = 'block';
-        document.getElementById('playlistView').style.display = 'none';
+        document.getElementById('playlistsView').style.display = 'none';
+        document.getElementById('videosView').style.display = 'none';
         renderCourses();
     }
 
@@ -341,14 +362,14 @@
         let users = JSON.parse(localStorage.getItem('platform_users')) || {};
         let user = users[phone];
         let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
-        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
+        let playlists = JSON.parse(localStorage.getItem('platform_playlists')) || DEFAULT_PLAYLISTS;
 
         const container = document.getElementById('coursesContainer');
         container.innerHTML = '';
 
         courses.forEach(course => {
             const isUnlocked = course.isFree || (user.unlockedCourses && user.unlockedCourses.includes(course.id));
-            const courseLessonsCount = lessons.filter(l => l.courseId == course.id).length;
+            const plCount = playlists.filter(p => p.courseId == course.id).length;
 
             let badge = course.isFree 
                 ? '<span class="badge badge-free">كورس مجاني</span>' 
@@ -363,11 +384,11 @@
                         </div>
                         <div class="card-body">
                             <p>${course.description}</p>
-                            <span style="font-size:0.8rem; font-weight:bold; color:var(--primary);">🎬 عدد المحاضرات: ${courseLessonsCount}</span>
+                            <span style="font-size:0.85rem; font-weight:bold; color:var(--primary);">📂 عدد قوائم التشغيل: ${plCount}</span>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn-watch btn-full" onclick="openCourse(${course.id})">دخول قائمة التشغيل (Playlist) ↗</button>
+                        <button class="btn-watch btn-full" onclick="openCourse(${course.id})">استعراض قوائم التشغيل ↗</button>
                     </div>
                 </div>
             `;
@@ -376,36 +397,87 @@
 
     function openCourse(courseId) {
         currentCourseId = courseId;
+        currentPlaylistId = null;
+        let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
+        let playlists = JSON.parse(localStorage.getItem('platform_playlists')) || DEFAULT_PLAYLISTS;
+        let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
+
+        const course = courses.find(c => c.id == courseId);
+        const coursePlaylists = playlists.filter(p => p.courseId == courseId);
+
+        document.getElementById('coursesView').style.display = 'none';
+        document.getElementById('playlistsView').style.display = 'block';
+        document.getElementById('videosView').style.display = 'none';
+        document.getElementById('selectedCourseTitle').innerText = course.title;
+        document.getElementById('selectedCourseDesc').innerText = course.description;
+
+        const container = document.getElementById('playlistsContainer');
+        container.innerHTML = '';
+
+        if(coursePlaylists.length === 0) {
+            container.innerHTML = '<p style="color:var(--muted);">لا توجد قوائم تشغيل مضافة لهذا الكورس بعد.</p>';
+            return;
+        }
+
+        coursePlaylists.forEach(pl => {
+            const vidCount = lessons.filter(l => l.playlistId == pl.id).length;
+            container.innerHTML += `
+                <div class="card">
+                    <div>
+                        <div class="card-header-playlist">
+                            <span style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:3px 10px; border-radius:12px;">Playlist</span>
+                            <h3 style="margin-top:8px;">${pl.title}</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>${pl.description}</p>
+                            <span style="font-size:0.85rem; font-weight:bold; color:var(--secondary);">🎬 عدد الفيديوهات: ${vidCount}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn-watch btn-full" onclick="openPlaylist(${pl.id})">فتح القائمة ومشاهدة الدروس ▶️</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function openPlaylist(playlistId) {
+        currentPlaylistId = playlistId;
         const phone = localStorage.getItem('current_student_phone');
         let users = JSON.parse(localStorage.getItem('platform_users')) || {};
         let user = users[phone];
         let courses = JSON.parse(localStorage.getItem('platform_courses')) || DEFAULT_COURSES;
+        let playlists = JSON.parse(localStorage.getItem('platform_playlists')) || DEFAULT_PLAYLISTS;
         let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
 
-        const course = courses.find(c => c.id == courseId);
-        const courseLessons = lessons.filter(l => l.courseId == courseId);
+        const course = courses.find(c => c.id == currentCourseId);
+        const playlist = playlists.find(p => p.id == playlistId);
+        const plLessons = lessons.filter(l => l.playlistId == playlistId);
         const isCourseUnlocked = course.isFree || (user.unlockedCourses && user.unlockedCourses.includes(course.id));
 
         document.getElementById('coursesView').style.display = 'none';
-        document.getElementById('playlistView').style.display = 'block';
-        document.getElementById('selectedCourseTitle').innerText = course.title;
-        document.getElementById('selectedCourseDesc').innerText = course.description;
+        document.getElementById('playlistsView').style.display = 'none';
+        document.getElementById('videosView').style.display = 'block';
 
-        const container = document.getElementById('playlistContainer');
+        document.getElementById('breadcrumbCourse').innerText = `الكورس: ${course.title}`;
+        document.getElementById('selectedPlaylistTitle').innerText = playlist.title;
+        document.getElementById('selectedPlaylistDesc').innerText = playlist.description;
+
+        const container = document.getElementById('videosContainer');
         container.innerHTML = '';
 
-        if(courseLessons.length === 0) {
-            container.innerHTML = '<p style="color:var(--muted);">لم يتم إضافة فيديوهات لهذا الكورس بعد.</p>';
+        if(plLessons.length === 0) {
+            container.innerHTML = '<p style="color:var(--muted);">لم يتم إضافة فيديوهات في هذه القائمة بعد.</p>';
             return;
         }
 
-        courseLessons.forEach((lesson, index) => {
+        plLessons.forEach((lesson, index) => {
             const isLessonAccessible = isCourseUnlocked || lesson.isFreePreview;
             const isQuizPassed = !lesson.requiredQuizId || (user.passedQuizzes && user.passedQuizzes.includes(lesson.requiredQuizId));
 
             let actionBtn = '';
             if(!isLessonAccessible) {
-                actionBtn = `<button class="btn-disabled" onclick="alert('هذا الكورس مغلق! فعّل كود الكورس من الأعلى لفتح جميع المحاضرات.')">🔒 مغلق (يتطلب كود الكورس)</button>`;
+                actionBtn = `<button class="btn-disabled" onclick="alert('هذا الكورس مغلق! فعّل كود الكورس من الأعلى لفتح جميع قوائم التشغيل.')">🔒 مغلق (يتطلب كود الكورس)</button>`;
             } else if(!isQuizPassed) {
                 actionBtn = `<button class="btn-quiz" onclick="openQuiz(${lesson.requiredQuizId})">📝 حل الامتحان لفتح الدرس</button>`;
             } else {
@@ -413,7 +485,7 @@
             }
 
             container.innerHTML += `
-                <div class="playlist-item">
+                <div class="video-item">
                     <div>
                         <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
                             <span style="background:var(--secondary); color:white; padding:2px 9px; border-radius:6px; font-size:0.8rem; font-weight:bold;">${index + 1}</span>
@@ -428,17 +500,45 @@
         });
     }
 
+    // مشغل فيديو ذكي يدعم يوتيوب، Vimeo، Google Drive، أو روابط MP4 مباشرة
+    function formatVideoPlayer(url) {
+        url = url.trim();
+        // 1. ملفات فيديو مباشرة MP4 / WebM
+        if(url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+            return `<video controls autoplay controlsList="nodownload"><source src="${url}" type="video/mp4">متصفحك لا يدعم تشغيل الفيديو.</video>`;
+        }
+        // 2. روابط يوتيوب العادية أو المختصرة
+        if(url.includes("youtube.com/watch?v=")) {
+            const videoId = url.split("watch?v=")[1].split("&")[0];
+            return `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
+        }
+        if(url.includes("youtu.be/")) {
+            const videoId = url.split("youtu.be/")[1].split("?")[0];
+            return `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
+        }
+        // 3. روابط Google Drive
+        if(url.includes("drive.google.com") && url.includes("/view")) {
+            const embedDrive = url.replace("/view", "/preview");
+            return `<iframe src="${embedDrive}" allowfullscreen></iframe>`;
+        }
+        // 4. روابط Vimeo العادية
+        if(url.includes("vimeo.com/") && !url.includes("player.vimeo.com")) {
+            const vimeoId = url.split("vimeo.com/")[1].split("?")[0];
+            return `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" allowfullscreen></iframe>`;
+        }
+        // 5. أي رابط Embed جاهز من أي موقع آخر
+        return `<iframe src="${url}" allowfullscreen></iframe>`;
+    }
+
     function watchLesson(id) {
         let lessons = JSON.parse(localStorage.getItem('platform_lessons')) || DEFAULT_LESSONS;
         let lesson = lessons.find(l => l.id == id);
-        let embedUrl = lesson.videoUrl;
-        if(embedUrl.includes("watch?v=")) embedUrl = embedUrl.replace("watch?v=", "embed/");
-        else if(embedUrl.includes("youtu.be/")) embedUrl = embedUrl.replace("youtu.be/", "www.youtube.com/embed/");
+        const playerHtml = formatVideoPlayer(lesson.videoUrl);
 
         document.getElementById('modalBody').innerHTML = `
             <h3>${lesson.title}</h3>
             <p style="color:var(--muted); margin-bottom:10px; font-size:0.9rem;">${lesson.description}</p>
-            <div class="video-wrapper"><iframe src="${embedUrl}" allowfullscreen></iframe></div>
+            <div class="video-wrapper">${playerHtml}</div>
         `;
         document.getElementById('contentModal').style.display = 'flex';
     }
@@ -481,16 +581,20 @@
                 users[phone].passedQuizzes.push(quizId);
                 localStorage.setItem('platform_users', JSON.stringify(users));
             }
-            modal.innerHTML = `<div style="text-align:center; padding:20px;"><h2 style="color:var(--success);">🎉 مبروك نجحت!</h2><p>درجتك: ${percent}%</p><button class="btn-primary" onclick="closeModal(); openCourse(currentCourseId);">فتح المحاضرة الآن</button></div>`;
+            modal.innerHTML = `<div style="text-align:center; padding:20px;"><h2 style="color:var(--success);">🎉 مبروك نجحت!</h2><p>درجتك: ${percent}%</p><button class="btn-primary" onclick="closeModal(); openPlaylist(currentPlaylistId);">فتح المحاضرة الآن</button></div>`;
         } else {
             modal.innerHTML = `<div style="text-align:center; padding:20px;"><h2 style="color:var(--danger);">❌ لم تجتز الامتحان</h2><p>درجتك: ${percent}% (المطلوب ${quiz.passScore}%)</p><button class="btn-quiz" onclick="openQuiz(${quizId})">إعادة المحاولة</button></div>`;
         }
     }
 
-    function closeModal() { document.getElementById('contentModal').style.display = 'none'; }
+    function closeModal() { 
+        document.getElementById('contentModal').style.display = 'none'; 
+        document.getElementById('modalBody').innerHTML = ''; // لإيقاف صوت الفيديو عند الإغلاق
+    }
 
     window.onload = function() {
         if(!localStorage.getItem('platform_courses')) localStorage.setItem('platform_courses', JSON.stringify(DEFAULT_COURSES));
+        if(!localStorage.getItem('platform_playlists')) localStorage.setItem('platform_playlists', JSON.stringify(DEFAULT_PLAYLISTS));
         if(!localStorage.getItem('platform_lessons')) localStorage.setItem('platform_lessons', JSON.stringify(DEFAULT_LESSONS));
         if(!localStorage.getItem('platform_quizzes')) localStorage.setItem('platform_quizzes', JSON.stringify(DEFAULT_QUIZZES));
         if(!localStorage.getItem('platform_codes')) localStorage.setItem('platform_codes', JSON.stringify(DEFAULT_CODES));
