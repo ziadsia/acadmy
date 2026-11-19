@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - منصة التفوق</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <nav class="bg-slate-900 border-b border-slate-800 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-black text-white">
+                منصة <span class="text-blue-500">التفوق</span>
+            </a>
+            <a href="index.html" class="text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl transition">
+                الرئيسية
+            </a>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-md shadow-2xl space-y-6">
+            <div class="flex bg-slate-950 p-1 rounded-2xl border border-slate-800">
+                <button id="tab-login" onclick="switchMode('login')"
+                    class="flex-1 py-2.5 rounded-xl text-xs font-black bg-blue-600 text-white transition">
+                    تسجيل الدخول
+                </button>
+                <button id="tab-signup" onclick="switchMode('signup')"
+                    class="flex-1 py-2.5 rounded-xl text-xs font-black text-slate-400 hover:text-white transition">
+                    إنشاء حساب جديد
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div id="name-field" class="hidden">
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">اسم الطالب</label>
+                    <input id="student-name" type="text" placeholder="اكتب اسمك الكامل"
+                        class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-sm text-white outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">البريد الإلكتروني</label>
+                    <input id="auth-email" type="email" placeholder="student@example.com"
+                        class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-sm text-white outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">كلمة المرور</label>
+                    <input id="auth-password" type="password" placeholder="6 أحرف أو أرقام على الأقل"
+                        onkeydown="if(event.key==='Enter') submitAuth()"
+                        class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-sm text-white outline-none">
+                </div>
+
+                <button id="auth-submit-btn" onclick="submitAuth()"
+                    class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-extrabold text-sm text-white transition">
+                    دخول إلى حسابي
+                </button>
+
+                <p id="auth-msg" class="text-xs font-bold text-center min-h-[20px]"></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js" onerror="console.warn('config.js not found, using fallback config')"></script>
+    <script>
+        const FALLBACK_URL = "https://ewtshnnehaczenjvbshg.supabase.co";
+        const FALLBACK_KEY = "sb_publishable_SUVALSaLiSmWK18S2Wn5zQ_ZSSqfraK";
+
+        if (typeof _supabase === "undefined") {
+            const url = typeof SUPABASE_URL !== "undefined" ? SUPABASE_URL : FALLBACK_URL;
+            const key = typeof SUPABASE_ANON_KEY !== "undefined" ? SUPABASE_ANON_KEY : FALLBACK_KEY;
+            window._supabase = window.supabase.createClient(url, key);
+        }
+
+        let authMode = 'login';
+
+        function switchMode(mode) {
+            authMode = mode;
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+            const nameField = document.getElementById('name-field');
+            const btn = document.getElementById('auth-submit-btn');
+
+            if (mode === 'login') {
+                tabLogin.className = "flex-1 py-2.5 rounded-xl text-xs font-black bg-blue-600 text-white transition";
+                tabSignup.className = "flex-1 py-2.5 rounded-xl text-xs font-black text-slate-400 hover:text-white transition";
+                nameField.classList.add('hidden');
+                btn.textContent = "دخول إلى حسابي";
+            } else {
+                tabSignup.className = "flex-1 py-2.5 rounded-xl text-xs font-black bg-blue-600 text-white transition";
+                tabLogin.className = "flex-1 py-2.5 rounded-xl text-xs font-black text-slate-400 hover:text-white transition";
+                nameField.classList.remove('hidden');
+                btn.textContent = "إنشاء الحساب الآن";
+            }
+            setAuthMsg("");
+        }
+
+        function setAuthMsg(text, isError = false) {
+            const el = document.getElementById('auth-msg');
+            el.textContent = text;
+            el.className = `text-xs font-bold text-center min-h-[20px] ${isError ? 'text-rose-400' : 'text-emerald-400'}`;
+        }
+
+        async function submitAuth() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const fullName = document.getElementById('student-name').value.trim();
+            const btn = document.getElementById('auth-submit-btn');
+
+            if (!email || !password) {
+                setAuthMsg("من فضلك أدخل البريد الإلكتروني وكلمة المرور", true);
+                return;
+            }
+
+            btn.disabled = true;
+            setAuthMsg("جاري المعالجة...");
+
+            try {
+                if (authMode === 'login') {
+                    const { error } = await _supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    setAuthMsg("تم تسجيل الدخول بنجاح، جاري تحويلك...");
+                    window.location.href = "courses.html";
+                } else {
+                    const { data, error } = await _supabase.auth.signUp({
+                        email,
+                        password,
+                        options: { data: { full_name: fullName || email.split('@')[0] } }
+                    });
+                    if (error) throw error;
+
+                    if (data.session) {
+                        setAuthMsg("تم إنشاء الحساب وتسجيل الدخول بنجاح...");
+                        window.location.href = "courses.html";
+                    } else {
+                        setAuthMsg("تم إنشاء الحساب! لو مفعل تأكيد البريد راجع بريدك أو فعّل الدخول المباشر من Supabase.");
+                    }
+                }
+            } catch (err) {
+                setAuthMsg(err.message || "حدث خطأ أثناء العملية", true);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        (async function checkAlreadyLoggedIn() {
+            const { data } = await _supabase.auth.getSession();
+            if (data && data.session) {
+                window.location.href = "courses.html";
+            }
+        })();
+    </script>
+</body>
+</html>
