@@ -18,8 +18,8 @@
             <a href="index.html" class="text-xl font-black text-white">
                 منصة <span class="text-blue-500">التفوق</span>
             </a>
-            <a href="courses.html" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-extrabold px-5 py-2.5 rounded-xl transition">
-                تصفح الكورسات
+            <a id="nav-entry-btn" href="auth.html" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-extrabold px-5 py-2.5 rounded-xl transition">
+                دخول / الكورسات
             </a>
         </div>
     </nav>
@@ -28,20 +28,20 @@
     <main class="max-w-7xl mx-auto w-full px-6 py-16 flex-grow flex flex-col justify-center">
         <div class="max-w-3xl space-y-6">
             <span class="inline-block text-xs font-extrabold bg-blue-500/15 text-blue-300 border border-blue-500/30 px-4 py-1.5 rounded-full">
-                تعلم منظم بالأكواد • قوائم تشغيل ومحاضرات متنوعة
+                حساب شخصي لكل طالب • تفعيل الكورسات بالأكواد
             </span>
 
             <h1 class="text-4xl md:text-5xl font-black text-white leading-tight">
-                كل كورس بكوده الخاص، <span class="text-blue-500">ومحتواك جاهز في أي وقت</span>
+                كل كورس بكوده الخاص، <span class="text-blue-500">ومحفوظ في حسابك دايماً</span>
             </h1>
 
             <p class="text-slate-400 text-base md:text-lg leading-relaxed">
-                تصفح الكورسات المتاحة على المنصة، فعّل الكورس الذي اشتريته فقط بكود التفعيل الخاص به، وابدأ المشاهدة مباشرة عبر قوائم التشغيل والمحاضرات المرتبة.
+                سجّل دخولك بحسابك، فعّل الكورس المطلوب بكوده الخاص، وهتفضل كورساتك ومحاضراتك محفوظة معاك في حسابك من أي جهاز.
             </p>
 
             <div class="flex flex-wrap items-center gap-4 pt-2">
-                <a href="courses.html" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-sm px-7 py-3.5 rounded-2xl transition shadow-lg shadow-blue-600/20">
-                    ابدأ الآن — عرض الكورسات ←
+                <a id="hero-entry-btn" href="auth.html" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-sm px-7 py-3.5 rounded-2xl transition shadow-lg shadow-blue-600/20">
+                    ابدأ الآن — تسجيل الدخول للكورسات ←
                 </a>
                 <a href="#how-it-works" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-extrabold text-sm px-6 py-3.5 rounded-2xl transition">
                     كيف يعمل النظام؟
@@ -52,35 +52,63 @@
         <!-- خطوات العمل -->
         <section id="how-it-works" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2">
-                <span class="text-xs font-black text-blue-400">01 • اختر الكورس</span>
-                <h2 class="text-lg font-black text-white">تصفح الكورسات المتاحة</h2>
+                <span class="text-xs font-black text-blue-400">01 • سجل بحسابك</span>
+                <h2 class="text-lg font-black text-white">دخول أو إنشاء حساب طالب</h2>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    ادخل إلى صفحة الكورسات واطلع على الكورسات الموجودة وحالة كل كورس (مفتوح أو مقفول).
+                    ادخل بحسابك الشخصي عشان بياناتك وكورساتك المفعّلة تفضل محفوظة باسمك.
                 </p>
             </div>
 
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2">
-                <span class="text-xs font-black text-emerald-400">02 • أدخل الكود</span>
-                <h2 class="text-lg font-black text-white">تفعيل الكورس المطلوب فقط</h2>
+                <span class="text-xs font-black text-emerald-400">02 • فعّل الكورس</span>
+                <h2 class="text-lg font-black text-white">أدخل كود الكورس المطلوب</h2>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    اكتب الكود الخاص بالكورس الذي اشتريته ليفتح لك هذا الكورس تحديداً بينما تظل باقي الكورسات مقفولة.
+                    اكتب كود التفعيل الخاص بالكورس ليفتح في حسابك بينما تظل باقي الكورسات مقفولة.
                 </p>
             </div>
 
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2">
-                <span class="text-xs font-black text-amber-400">03 • ابدأ المشاهدة</span>
-                <h2 class="text-lg font-black text-white">مشاهدة البلاي ليست والمحاضرات</h2>
+                <span class="text-xs font-black text-amber-400">03 • شاهد في أي وقت</span>
+                <h2 class="text-lg font-black text-white">متابعة المحاضرات من أي جهاز</h2>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    انتقل لصفحة المشاهدة وتنقل بسهولة بين قائمة التشغيل الكاملة أو المحاضرات المضافة للكورس.
+                    افتح الكورس وشاهد دروسه بسهولة، وكل ما تسجل دخول بحسابك هتلاقي كورساتك جاهزة.
                 </p>
             </div>
         </section>
     </main>
 
-    <!-- تذييل بسيط -->
     <footer class="border-t border-slate-900 py-6 px-6 text-center text-xs text-slate-500">
         جميع الحقوق محفوظة © منصة التفوق التعليمية
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js" onerror="console.warn('config.js not found, using fallback config')"></script>
+    <script>
+        const FALLBACK_URL = "https://ewtshnnehaczenjvbshg.supabase.co";
+        const FALLBACK_KEY = "sb_publishable_SUVALSaLiSmWK18S2Wn5zQ_ZSSqfraK";
+
+        if (typeof _supabase === "undefined" && window.supabase) {
+            const url = typeof SUPABASE_URL !== "undefined" ? SUPABASE_URL : FALLBACK_URL;
+            const key = typeof SUPABASE_ANON_KEY !== "undefined" ? SUPABASE_ANON_KEY : FALLBACK_KEY;
+            window._supabase = window.supabase.createClient(url, key);
+        }
+
+        (async function checkSessionForHome() {
+            if (!window._supabase || !window._supabase.auth) return;
+            const { data } = await _supabase.auth.getSession();
+            if (data && data.session && data.session.user) {
+                const navBtn = document.getElementById('nav-entry-btn');
+                const heroBtn = document.getElementById('hero-entry-btn');
+                if (navBtn) {
+                    navBtn.href = "courses.html";
+                    navBtn.textContent = "كورساتي";
+                }
+                if (heroBtn) {
+                    heroBtn.href = "courses.html";
+                    heroBtn.textContent = "الدخول إلى كورساتي ←";
+                }
+            }
+        })();
+    </script>
 </body>
 </html>
