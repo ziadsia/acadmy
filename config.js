@@ -1,31 +1,44 @@
-const SUPABASE_URL = "https://ewtshnnehaczenjvbshg.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_SUVALSaLiSmWK18S2Wn5zQ_ZSSqfraK";
+// تحديد نوع المصدر وبناء رابط التشغيل المناسب لأي فيديو (YouTube / Vimeo / Drive / MP4 / Embed)
+function buildVideoEmbedConfig(rawSource) {
+    if (!rawSource) return { type: 'none', src: '' };
+    const input = rawSource.trim();
 
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// معرف فريد لكل متصفح/جهاز لتخزين الكورسات التي فتحها الطالب
-function getClientId() {
-    let cid = localStorage.getItem("edtech_client_id");
-    if (!cid) {
-        cid = "stu_" + crypto.randomUUID();
-        localStorage.setItem("edtech_client_id", cid);
+    // 1. رابط فيديو مباشر (.mp4, .webm, .ogg, .m3u8)
+    if (/\.(mp4|webm|ogg|m3u8)(\?.*)?$/i.test(input)) {
+        return { type: 'video', src: input };
     }
-    return cid;
-}
 
-// استخراج ID الفيديو من رابط يوتيوب أو إدخاله مباشرة
-function extractYouTubeVideoId(input) {
-    if (!input) return "";
-    const trimmed = input.trim();
-    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
-    const match = trimmed.match(/(?:v=|\/embed\/|youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
-    return match ? match[1] : trimmed;
-}
+    // 2. YouTube (رابط كامل أو ID مكون من 11 حرف)
+    const ytId = extractYouTubeVideoId(input);
+    if (/^[a-zA-Z0-9_-]{11}$/.test(ytId)) {
+        return {
+            type: 'iframe',
+            src: `https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1`
+        };
+    }
 
-// استخراج ID البلاي ليست من رابط يوتيوب أو إدخاله مباشرة
-function extractYouTubePlaylistId(input) {
-    if (!input) return "";
-    const trimmed = input.trim();
-    const match = trimmed.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-    return match ? match[1] : trimmed;
+    // 3. Vimeo
+    const vimeoMatch = input.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+    if (vimeoMatch) {
+        return {
+            type: 'iframe',
+            src: `https://player.vimeo.com/video/${vimeoMatch[1]}`
+        };
+    }
+
+    // 4. Google Drive
+    const driveMatch = input.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
+    if (driveMatch) {
+        return {
+            type: 'iframe',
+            src: `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+        };
+    }
+
+    // 5. أي رابط Embed أو رابط خارجي آخر
+    if (/^https?:\/\//i.test(input)) {
+        return { type: 'iframe', src: input };
+    }
+
+    return { type: 'none', src: '' };
 }
