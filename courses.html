@@ -227,7 +227,7 @@
             try {
                 const { data: codeRow, error: codeErr } = await _supabase
                     .from('activation_codes')
-                    .select('id, code, course_id')
+                    .select('id, code, course_id, max_uses, used_count')
                     .eq('code', rawCode)
                     .maybeSingle();
 
@@ -241,6 +241,31 @@
 
                 if (Number(codeRow.course_id) !== Number(courseId)) {
                     setMessage(msg, "⚠️ هذا الكود مخصص لكورس آخر وليس هذا الكورس", "error");
+                    btn.disabled = false;
+                    return;
+                }
+
+                const maxUses = Number(codeRow.max_uses ?? 1);
+                const usedCount = Number(codeRow.used_count ?? 0);
+
+                if (usedCount >= maxUses) {
+                    setMessage(msg, "❌ هذا الكود تم استخدامه من قبل ولا يصلح مرة أخرى", "error");
+                    btn.disabled = false;
+                    return;
+                }
+
+                const { data: updatedCode, error: updErr } = await _supabase
+                    .from('activation_codes')
+                    .update({ used_count: usedCount + 1 })
+                    .eq('id', codeRow.id)
+                    .eq('used_count', usedCount)
+                    .select()
+                    .maybeSingle();
+
+                if (updErr) throw updErr;
+
+                if (!updatedCode) {
+                    setMessage(msg, "❌ تم استخدام هذا الكود للتو بواسطة حساب آخر", "error");
                     btn.disabled = false;
                     return;
                 }
