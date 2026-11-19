@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الكورسات الدراسية</title>
+    <title>منصة التفوق التعليمية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -18,241 +18,69 @@
             <a href="index.html" class="text-xl font-black text-white">
                 منصة <span class="text-blue-500">التفوق</span>
             </a>
-            <div class="flex items-center gap-3">
-                <span id="unlocked-count" class="hidden sm:inline-block text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl"></span>
-                <a href="index.html" class="text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl transition">
-                    الرئيسية
-                </a>
-            </div>
+            <a href="courses.html" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-extrabold px-5 py-2.5 rounded-xl transition">
+                تصفح الكورسات
+            </a>
         </div>
     </nav>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
-        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-                <h1 class="text-3xl font-black text-white">الكورسات المتاحة</h1>
-                <p class="text-slate-400 text-sm mt-2">
-                    أدخل كود التفعيل الخاص بالكورس المطلوب لفتحه مباشرة، بينما تظل باقي الكورسات مقفولة.
-                </p>
+    <!-- الواجهة الرئيسية -->
+    <main class="max-w-7xl mx-auto w-full px-6 py-16 flex-grow flex flex-col justify-center">
+        <div class="max-w-3xl space-y-6">
+            <span class="inline-block text-xs font-extrabold bg-blue-500/15 text-blue-300 border border-blue-500/30 px-4 py-1.5 rounded-full">
+                تعلم منظم بالأكواد • قوائم تشغيل ومحاضرات متنوعة
+            </span>
+
+            <h1 class="text-4xl md:text-5xl font-black text-white leading-tight">
+                كل كورس بكوده الخاص، <span class="text-blue-500">ومحتواك جاهز في أي وقت</span>
+            </h1>
+
+            <p class="text-slate-400 text-base md:text-lg leading-relaxed">
+                تصفح الكورسات المتاحة على المنصة، فعّل الكورس الذي اشتريته فقط بكود التفعيل الخاص به، وابدأ المشاهدة مباشرة عبر قوائم التشغيل والمحاضرات المرتبة.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-4 pt-2">
+                <a href="courses.html" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-sm px-7 py-3.5 rounded-2xl transition shadow-lg shadow-blue-600/20">
+                    ابدأ الآن — عرض الكورسات ←
+                </a>
+                <a href="#how-it-works" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-extrabold text-sm px-6 py-3.5 rounded-2xl transition">
+                    كيف يعمل النظام؟
+                </a>
             </div>
         </div>
 
-        <!-- حالة التحميل -->
-        <div id="loading-box" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
-        </div>
+        <!-- خطوات العمل -->
+        <section id="how-it-works" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2">
+                <span class="text-xs font-black text-blue-400">01 • اختر الكورس</span>
+                <h2 class="text-lg font-black text-white">تصفح الكورسات المتاحة</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    ادخل إلى صفحة الكورسات واطلع على الكورسات الموجودة وحالة كل كورس (مفتوح أو مقفول).
+                </p>
+            </div>
 
-        <!-- شبكة الكورسات -->
-        <div id="courses-grid" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2">
+                <span class="text-xs font-black text-emerald-400">02 • أدخل الكود</span>
+                <h2 class="text-lg font-black text-white">تفعيل الكورس المطلوب فقط</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    اكتب الكود الخاص بالكورس الذي اشتريته ليفتح لك هذا الكورس تحديداً بينما تظل باقي الكورسات مقفولة.
+                </p>
+            </div>
 
-        <!-- رسالة في حال عدم وجود كورسات -->
-        <div id="empty-box" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-10 text-center max-w-lg mx-auto my-10">
-            <p class="text-lg font-extrabold text-white mb-2">لا توجد كورسات مضافة حالياً</p>
-            <p class="text-slate-400 text-sm">يمكنك إضافة الكورسات وربطها بالبلاي ليست والأكواد من لوحة الأدمن.</p>
-        </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2">
+                <span class="text-xs font-black text-amber-400">03 • ابدأ المشاهدة</span>
+                <h2 class="text-lg font-black text-white">مشاهدة البلاي ليست والمحاضرات</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    انتقل لصفحة المشاهدة وتنقل بسهولة بين قائمة التشغيل الكاملة أو المحاضرات المضافة للكورس.
+                </p>
+            </div>
+        </section>
     </main>
 
-    <!-- مكتبة Supabase ثم ملف الإعدادات -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
-    <script>
-        let coursesList = [];
-        let unlockedCourseIds = new Set();
+    <!-- تذييل بسيط -->
+    <footer class="border-t border-slate-900 py-6 px-6 text-center text-xs text-slate-500">
+        جميع الحقوق محفوظة © منصة التفوق التعليمية
+    </footer>
 
-        async function loadCoursesPage() {
-            const clientId = getClientId();
-            const loadingBox = document.getElementById('loading-box');
-            const grid = document.getElementById('courses-grid');
-            const emptyBox = document.getElementById('empty-box');
-
-            try {
-                // جلب الكورسات مرتبة حسب تاريخ الإضافة أو المعرف
-                const { data: courses, error: coursesErr } = await _supabase
-                    .from('courses')
-                    .select('id, title, description, playlist_id')
-                    .order('id', { ascending: true });
-
-                if (coursesErr) throw coursesErr;
-
-                // جلب الكورسات المفتوحة لهذا المتصفح/الطالب
-                const { data: unlocks, error: unlocksErr } = await _supabase
-                    .from('student_unlocks')
-                    .select('course_id')
-                    .eq('client_id', clientId);
-
-                if (unlocksErr) throw unlocksErr;
-
-                coursesList = courses || [];
-                unlockedCourseIds = new Set((unlocks || []).map(u => Number(u.course_id)));
-
-                loadingBox.classList.add('hidden');
-
-                if (coursesList.length === 0) {
-                    emptyBox.classList.remove('hidden');
-                    return;
-                }
-
-                renderCourses();
-                grid.classList.remove('hidden');
-            } catch (err) {
-                loadingBox.innerHTML = `
-                    <div class="col-span-full bg-rose-950/30 border border-rose-500/40 rounded-3xl p-6 text-center">
-                        <p class="font-extrabold text-rose-300 mb-1">حدث خطأ أثناء تحميل الكورسات</p>
-                        <p class="text-xs text-rose-200/80">${err.message || 'تأكد من إعدادات الاتصال بقاعدة البيانات'}</p>
-                    </div>
-                `;
-            }
-        }
-
-        function renderCourses() {
-            const grid = document.getElementById('courses-grid');
-            const countBadge = document.getElementById('unlocked-count');
-
-            countBadge.textContent = `الكورسات المفتوحة: ${unlockedCourseIds.size} من ${coursesList.length}`;
-            countBadge.classList.remove('hidden');
-
-            grid.innerHTML = '';
-
-            coursesList.forEach(course => {
-                const courseIdNum = Number(course.id);
-                const isUnlocked = unlockedCourseIds.has(courseIdNum);
-
-                grid.innerHTML += `
-                    <div class="bg-slate-900 border ${isUnlocked ? 'border-emerald-500/40' : 'border-slate-800'} rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl transition">
-                        <div>
-                            <div class="p-6 bg-gradient-to-br ${isUnlocked ? 'from-emerald-950/70 to-slate-900' : 'from-slate-800/70 to-slate-900'} border-b border-slate-800 flex items-start justify-between gap-3">
-                                <h2 class="text-xl font-black text-white leading-snug">${escapeHtml(course.title)}</h2>
-                                <span class="shrink-0 text-xs font-extrabold px-3 py-1 rounded-full ${isUnlocked ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
-                                    ${isUnlocked ? 'مفتوح ✅' : 'مقفول 🔒'}
-                                </span>
-                            </div>
-
-                            <div class="p-6">
-                                <p class="text-slate-400 text-sm leading-relaxed">
-                                    ${escapeHtml(course.description || 'محتوى تعليمي منظم عبر قائمة تشغيل ومحاضرات متتابعة.')}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="px-6 pb-6">
-                            ${isUnlocked ? `
-                                <a href="watch.html?id=${encodeURIComponent(course.id)}"
-                                   class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm flex items-center justify-center transition">
-                                    دخول ومشاهدة الكورس 🎬
-                                </a>
-                            ` : `
-                                <div class="space-y-2.5">
-                                    <input id="code-input-${course.id}" type="text" placeholder="أدخل كود تفعيل هذا الكورس"
-                                        onkeydown="if(event.key==='Enter') activateCourseCode(${course.id})"
-                                        class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition">
-                                    <button id="btn-activate-${course.id}" onclick="activateCourseCode(${course.id})"
-                                        class="w-full py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-extrabold text-sm transition">
-                                        تفعيل الكورس
-                                    </button>
-                                    <p id="msg-${course.id}" class="text-xs font-bold min-h-[18px] text-center"></p>
-                                </div>
-                            `}
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        async function activateCourseCode(courseId) {
-            const input = document.getElementById(`code-input-${courseId}`);
-            const btn = document.getElementById(`btn-activate-${courseId}`);
-            const msg = document.getElementById(`msg-${courseId}`);
-            const rawCode = input.value.trim().toUpperCase();
-
-            if (!rawCode) {
-                setMessage(msg, "من فضلك أدخل كود التفعيل أولاً", "error");
-                return;
-            }
-
-            btn.disabled = true;
-            setMessage(msg, "جاري التحقق من الكود...", "info");
-
-            try {
-                // البحث عن الكود والتحقق أنه مرتبط بهذا الكورس تحديداً
-                const { data: codeRow, error: codeErr } = await _supabase
-                    .from('activation_codes')
-                    .select('id, code, course_id, max_uses, used_count')
-                    .eq('code', rawCode)
-                    .maybeSingle();
-
-                if (codeErr) throw codeErr;
-
-                if (!codeRow) {
-                    setMessage(msg, "❌ الكود غير موجود أو غير صحيح", "error");
-                    btn.disabled = false;
-                    return;
-                }
-
-                // التحقق أن الكود خاص بهذا الكورس فقط وليس كورس آخر
-                if (Number(codeRow.course_id) !== Number(courseId)) {
-                    setMessage(msg, "⚠️ هذا الكود مخصص لكورس آخر وليس هذا الكورس", "error");
-                    btn.disabled = false;
-                    return;
-                }
-
-                const maxUses = Number(codeRow.max_uses ?? 1);
-                const usedCount = Number(codeRow.used_count ?? 0);
-
-                if (maxUses > 0 && usedCount >= maxUses) {
-                    setMessage(msg, "❌ تم استهلاك الحد الأقصى لاستخدام هذا الكود", "error");
-                    btn.disabled = false;
-                    return;
-                }
-
-                // تسجيل فتح هذا الكورس فقط للطالب
-                const clientId = getClientId();
-                const { error: unlockErr } = await _supabase
-                    .from('student_unlocks')
-                    .upsert(
-                        [{ client_id: clientId, course_id: Number(courseId) }],
-                        { onConflict: 'client_id,course_id', ignoreDuplicates: true }
-                    );
-
-                if (unlockErr) throw unlockErr;
-
-                // تحديث عدد مرات استخدام الكود
-                await _supabase
-                    .from('activation_codes')
-                    .update({ used_count: usedCount + 1 })
-                    .eq('id', codeRow.id);
-
-                unlockedCourseIds.add(Number(courseId));
-                renderCourses();
-            } catch (err) {
-                setMessage(msg, "حدث خطأ أثناء التفعيل: " + (err.message || ""), "error");
-                btn.disabled = false;
-            }
-        }
-
-        function setMessage(el, text, type) {
-            el.textContent = text;
-            if (type === "error") {
-                el.className = "text-xs font-bold min-h-[18px] text-center text-rose-400";
-            } else if (type === "info") {
-                el.className = "text-xs font-bold min-h-[18px] text-center text-sky-400";
-            } else {
-                el.className = "text-xs font-bold min-h-[18px] text-center text-emerald-400";
-            }
-        }
-
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        loadCoursesPage();
-    </script>
 </body>
 </html>
