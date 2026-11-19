@@ -12,28 +12,27 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-    <!-- الشريط العلوي -->
     <nav class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 px-6 py-4 backdrop-blur">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
             <a href="index.html" class="text-xl font-black text-white">
                 منصة <span class="text-blue-500">التفوق</span>
             </a>
             <div class="flex items-center gap-3">
-                <span id="unlocked-count" class="hidden sm:inline-block text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl"></span>
-                <a href="index.html" class="text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl transition">
-                    الرئيسية
-                </a>
+                <span id="student-badge" class="hidden sm:inline-block text-xs font-bold bg-slate-800 text-slate-200 px-3 py-1.5 rounded-xl"></span>
+                <span id="unlocked-count" class="hidden md:inline-block text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl"></span>
+                <button onclick="logoutStudent()" class="text-xs font-bold text-rose-300 hover:text-rose-200 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 px-3.5 py-2 rounded-xl transition">
+                    تسجيل خروج
+                </button>
             </div>
         </div>
     </nav>
 
-    <!-- المحتوى الرئيسي -->
     <main class="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
         <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-black text-white">الكورسات المتاحة</h1>
                 <p class="text-slate-400 text-sm mt-2">
-                    أدخل كود التفعيل الخاص بالكورس المطلوب لفتحه مباشرة، بينما تظل باقي الكورسات مقفولة.
+                    الكورسات التي تفعلها تظل محفوظة في حسابك وتفتح معك من أي جهاز تسجل به.
                 </p>
             </div>
             <button onclick="loadCoursesPage()" class="self-start md:self-auto text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl transition">
@@ -41,17 +40,14 @@
             </button>
         </div>
 
-        <!-- حالة التحميل -->
         <div id="loading-box" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 h-64 animate-pulse"></div>
         </div>
 
-        <!-- شبكة الكورسات -->
         <div id="courses-grid" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 
-        <!-- رسالة في حال عدم وجود كورسات -->
         <div id="empty-box" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-10 text-center max-w-lg mx-auto my-10">
             <p class="text-lg font-extrabold text-white mb-2">لا توجد كورسات مضافة حالياً</p>
             <p class="text-slate-400 text-sm">يمكنك إضافة الكورسات والفيديوهات والأكواد من لوحة الأدمن.</p>
@@ -70,23 +66,17 @@
             window._supabase = window.supabase.createClient(url, key);
         }
 
-        if (typeof getClientId !== "function") {
-            window.getClientId = function () {
-                let cid = localStorage.getItem("edtech_client_id");
-                if (!cid) {
-                    cid = "stu_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
-                    localStorage.setItem("edtech_client_id", cid);
-                }
-                return cid;
-            };
-        }
-
+        let currentUser = null;
         let coursesList = [];
         let unlockedCourseIds = new Set();
         let videoCountsMap = {};
 
+        async function logoutStudent() {
+            await _supabase.auth.signOut();
+            window.location.href = "auth.html";
+        }
+
         async function loadCoursesPage() {
-            const clientId = getClientId();
             const loadingBox = document.getElementById('loading-box');
             const grid = document.getElementById('courses-grid');
             const emptyBox = document.getElementById('empty-box');
@@ -96,6 +86,20 @@
             emptyBox.classList.add('hidden');
 
             try {
+                const { data: sessionData, error: sessionErr } = await _supabase.auth.getSession();
+                if (sessionErr) throw sessionErr;
+
+                if (!sessionData || !sessionData.session || !sessionData.session.user) {
+                    window.location.href = "auth.html";
+                    return;
+                }
+
+                currentUser = sessionData.session.user;
+                const displayName = currentUser.user_metadata?.full_name || currentUser.email;
+                const badge = document.getElementById('student-badge');
+                badge.textContent = `👤 ${displayName}`;
+                badge.classList.remove('hidden');
+
                 const { data: courses, error: coursesErr } = await _supabase
                     .from('courses')
                     .select('id, title, description')
@@ -106,7 +110,7 @@
                 const { data: unlocks, error: unlocksErr } = await _supabase
                     .from('student_unlocks')
                     .select('course_id')
-                    .eq('client_id', clientId);
+                    .eq('user_id', currentUser.id);
 
                 if (unlocksErr) throw unlocksErr;
 
@@ -147,7 +151,7 @@
             const grid = document.getElementById('courses-grid');
             const countBadge = document.getElementById('unlocked-count');
 
-            countBadge.textContent = `الكورسات المفتوحة: ${unlockedCourseIds.size} من ${coursesList.length}`;
+            countBadge.textContent = `الكورسات المفتوحة في حسابك: ${unlockedCourseIds.size} من ${coursesList.length}`;
             countBadge.classList.remove('hidden');
 
             grid.innerHTML = '';
@@ -190,7 +194,7 @@
                                         class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition">
                                     <button id="btn-activate-${course.id}" onclick="activateCourseCode(${course.id})"
                                         class="w-full py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-extrabold text-sm transition">
-                                        تفعيل الكورس
+                                        تفعيل الكورس لحسابي
                                     </button>
                                     <p id="msg-${course.id}" class="text-xs font-bold min-h-[18px] text-center"></p>
                                 </div>
@@ -207,6 +211,11 @@
             const msg = document.getElementById(`msg-${courseId}`);
             const rawCode = input.value.trim().toUpperCase();
 
+            if (!currentUser) {
+                window.location.href = "auth.html";
+                return;
+            }
+
             if (!rawCode) {
                 setMessage(msg, "من فضلك أدخل كود التفعيل أولاً", "error");
                 return;
@@ -218,7 +227,7 @@
             try {
                 const { data: codeRow, error: codeErr } = await _supabase
                     .from('activation_codes')
-                    .select('id, code, course_id, max_uses, used_count')
+                    .select('id, code, course_id')
                     .eq('code', rawCode)
                     .maybeSingle();
 
@@ -236,29 +245,13 @@
                     return;
                 }
 
-                const maxUses = Number(codeRow.max_uses ?? 1);
-                const usedCount = Number(codeRow.used_count ?? 0);
-
-                if (maxUses > 0 && usedCount >= maxUses) {
-                    setMessage(msg, "❌ تم استهلاك الحد الأقصى لاستخدام هذا الكود", "error");
-                    btn.disabled = false;
-                    return;
-                }
-
-                const clientId = getClientId();
                 const { error: unlockErr } = await _supabase
                     .from('student_unlocks')
-                    .upsert(
-                        [{ client_id: clientId, course_id: Number(courseId) }],
-                        { onConflict: 'client_id,course_id', ignoreDuplicates: true }
-                    );
+                    .insert([{ user_id: currentUser.id, course_id: Number(courseId) }]);
 
-                if (unlockErr) throw unlockErr;
-
-                await _supabase
-                    .from('activation_codes')
-                    .update({ used_count: usedCount + 1 })
-                    .eq('id', codeRow.id);
+                if (unlockErr && !String(unlockErr.message || '').toLowerCase().includes('duplicate')) {
+                    throw unlockErr;
+                }
 
                 unlockedCourseIds.add(Number(courseId));
                 renderCourses();
